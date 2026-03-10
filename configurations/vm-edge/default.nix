@@ -60,8 +60,8 @@ in {
         #../../features/ripgrep
         #../../features/zoxide
         #../../features/btop
-        ../../features/minecraft
-        # ../../features/cloudflared
+        #../../features/minecraft
+        #../../features/cloudflared
     ];
 
   nixpkgs = {

@@ -97,14 +97,14 @@
         host.enable = true;
 
         autostart = [
+            vm-edge
         ];
 
         # Declare VMs
-        #vms.vm-edge = {
-        #    flake = self;
-        #    updateFlake = "git+file:///etc/nixos";
-        #    autostart = false;
-        #};
+        vms.vm-edge = {
+            flake = self;
+            updateFlake = "git+https://github.com/NikolayBushilo/nix-config";
+        };
     };
 
 
