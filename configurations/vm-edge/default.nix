@@ -99,9 +99,7 @@ in {
     sops = {
         defaultSopsFile = ./secrets.yaml;
 
-        age.sshKeyPaths = [
-            config.sops.secrets.ssh_host_ed25519_key.path
-        ];
+        age.sshKeyPaths = [ "/data/identities/ssh_host_ed25519_key" ];
 
         secrets."cloudflared/minecraft_tunnel" = {
             owner = "cloudflared";
