@@ -97,7 +97,7 @@
         host.enable = true;
 
         autostart = [
-            vm-edge
+            "vm-edge"
         ];
 
         # Declare VMs
