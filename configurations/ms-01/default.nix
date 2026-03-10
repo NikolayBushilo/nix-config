@@ -54,7 +54,7 @@
     # Features
     ../../features/motd.nix
     ../../features/groups/cli
-    ../../features/minecraft
+    #../../features/minecraft
   ];
 
   nixpkgs = {
