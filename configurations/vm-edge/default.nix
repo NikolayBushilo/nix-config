@@ -101,11 +101,12 @@ in {
 
         age.sshKeyPaths = [ "/data/identities/ssh_host_ed25519_key" ];
 
-        secrets."cloudflared/minecraft_tunnel" = {
-            owner = "cloudflared";
-            group = "cloudflared";
-            mode = "0400";
-        };
+        secrets.example-key = {};
+        #secrets."cloudflared/minecraft_tunnel" = {
+        #    owner = "cloudflared";
+        #    group = "cloudflared";
+        #    mode = "0400";
+        #};
 
         #secrets.ssh_host_ed25519_key = {
         #    owner = "root";
