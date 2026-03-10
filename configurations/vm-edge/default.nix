@@ -97,17 +97,17 @@ in {
 
 # 2.1 Sops
     sops = {
-        #defaultSopsFile = ./secrets.yaml;
+        defaultSopsFile = ./secrets.yaml;
 
-        #age.sshKeyPaths = [
-        #    config.sops.secrets.ssh_host_ed25519_key.path
-        #];
+        age.sshKeyPaths = [
+            config.sops.secrets.ssh_host_ed25519_key.path
+        ];
 
-        #secrets."cloudflared/minecraft_tunnel" = {
-        #    owner = "cloudflared";
-        #    group = "cloudflared";
-        #    mode = "0400";
-        #};
+        secrets."cloudflared/minecraft_tunnel" = {
+            owner = "cloudflared";
+            group = "cloudflared";
+            mode = "0400";
+        };
 
         #secrets.ssh_host_ed25519_key = {
         #    owner = "root";
