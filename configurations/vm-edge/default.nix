@@ -118,6 +118,10 @@ in {
 
 # 2.2 MicroVM
     microvm = {
+        # VM settings
+        mem = 16384;
+        vcpu = 4;
+
         # Pass tap interface to host
         interfaces = [
             {
@@ -127,9 +131,22 @@ in {
             }
         ];
 
-        # VM settings
-        mem = 16384;
-        vcpu = 4;
+        # Persistant file systems
+        shares = [
+            {
+                proto = "virtiofs";
+                tag = "vm-edge-identities";
+                source = "data/identities";
+                mountPoint = "/data/identities";
+            }
+            #{
+            #    proto = "virtiofs";
+            #    tag = "vm-edge-services";
+            #    source = "/tank/data/services/minecraft/cobblemon";
+            #    mountPoint = "/vm-data/minecraft/cobblemon";
+            #}
+        ];
+
     };
 
 # 2.3 Networking
@@ -155,12 +172,13 @@ in {
         enable = true;
         settings.PasswordAuthentication = false;
 
-        #hostKeys = [
+        hostKeys = [
+            "/data/identities/ssh_host_ed25519_key"
         #    {
         #        path = config.sops.secrets.ssh_host_ed25519_key.path;
         #        type = "ed25519";
         #    }
-        #];
+        ];
     };
 
     #services.cloudflared = {
