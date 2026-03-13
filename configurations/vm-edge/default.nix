@@ -60,7 +60,7 @@ in {
         #../../features/ripgrep
         #../../features/zoxide
         #../../features/btop
-        ../../features/minecraft
+        #../../features/minecraft
         #../../features/cloudflared
     ];
 
@@ -164,6 +164,7 @@ in {
     environment.systemPackages = with pkgs; [
         git
         kitty.terminfo
+        lf
     ];
 
 # 2.5 Services

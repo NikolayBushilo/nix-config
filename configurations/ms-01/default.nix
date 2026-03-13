@@ -52,7 +52,7 @@
     ../../users/niko
 
     # Features
-    ../../features/motd.nix
+    # ../../features/motd.nix
     ../../features/groups/cli
     #../../features/minecraft
   ];
