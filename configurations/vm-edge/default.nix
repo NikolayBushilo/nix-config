@@ -60,7 +60,7 @@ in {
         #../../features/ripgrep
         #../../features/zoxide
         #../../features/btop
-        # ../../features/minecraft
+        ../../features/minecraft
         #../../features/cloudflared
     ];
 
