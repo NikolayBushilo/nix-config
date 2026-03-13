@@ -103,7 +103,7 @@
         # Declare VMs
         vms.vm-edge = {
             flake = self;
-            updateFlake = "git+https://github.com/NikolayBushilo/nix-config";
+            updateFlake = "git+https://github.com/NikolayBushilo/nix-config?ref=main";
         };
     };
 
