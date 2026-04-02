@@ -18,7 +18,7 @@ in
       position = "left";
       width = 60;
       margin = "10 5 10 10";
-      output = [ "DP-2" ];
+      output = [ "eDP-1" ];
       reload_style_on_change=true;
       start_hidden=true;
 

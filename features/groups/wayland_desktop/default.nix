@@ -6,6 +6,7 @@
         ../../hyprland
         ../../waybar
         ../../kitty
+        ../../brightnessctl
     ];
 
     xdg.portal = {

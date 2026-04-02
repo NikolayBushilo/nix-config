@@ -64,6 +64,10 @@
         inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    nix-colors = {
+        url = "github:misterio77/nix-colors";
+    };
+
   };
 
   outputs = {
@@ -73,6 +77,7 @@
     nvf,
     microvm,
     sops-nix,
+    nix-colors,
     ...
   } @ inputs: let
     inherit (self) outputs;
@@ -127,7 +132,7 @@
       # Framework 13 Laptop
       "laptop-fw13" = nixpkgs.lib.nixosSystem {
         modules = [ ./configurations/laptop-fw13 ];
-        specialArgs = {inherit inputs outputs;};
+        specialArgs = {inherit inputs outputs self;};
       };
 
       # MS-01 HomeLab Server

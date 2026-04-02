@@ -27,6 +27,7 @@
   lib,
   config,
   pkgs,
+  nix-colors,
   ...
 }: 
 {
@@ -194,6 +195,8 @@
   environment.systemPackages = with pkgs; [
   ];
 
+    services.xserver.xkbOptions = "caps:swapescape";
+
   # Do not change!
   system.stateVersion = "23.05";
 
@@ -202,20 +205,81 @@
 # 3. Home-manager Configuration
 #----------------------------------------------------------------
 
- home-manager.useGlobalPkgs = true;
+    home-manager.useGlobalPkgs = true;
 
- home-manager.users.niko = {
+    home-manager.users.niko = {config, ...}: 
+    let
+        c = config.colorScheme.palette;
+    in {
 
-    programs.kitty = {
-        enable = true;
-        settings = {
-            font_family="JetBrains Mono Medium";
-            font_size=15;
-            window_margin_width=4;
-            shell_integration=false;
-            themeFile = "gruvbox-dark";
+        imports = [ inputs.nix-colors.homeManagerModules.default inputs.nvf.homeManagerModules.nvf ];
+
+        colorScheme = inputs.nix-colors.colorSchemes.windows-95;
+
+        programs.kitty = {
+            enable = true;
+            # themeFile = "Solarized_Light";
+            settings = {
+                font_family="JetBrains Mono Medium";
+                font_size=14;
+                window_margin_width=4;
+                shell_integration=true;
+
+
+                # The basic colors
+                foreground = "#${c.base04}";
+                background = "#${c.base00}";
+                selection_foreground = "#${c.base05}";
+                selection_background = "#${c.base01}";
+
+                # Cursor colors
+                cursor = "#${c.base04}";
+                cursor_text_color = "#${c.base00}";
+
+                # kitty window border colors
+                active_border_color = "#${c.base09}";
+                inactive_border_color = "#${c.base02}";
+
+                # Tab bar colors
+                active_tab_background = "#${c.base00}";
+                active_tab_foreground = "#${c.base04}";
+                inactive_tab_background = "#${c.base02}";
+                inactive_tab_foreground = "#${c.base00}";
+
+                # The basic 16 colors
+                # black
+                color0 = "#${c.base06}";
+                color8 = "#${c.base02}";
+
+                # red
+                color1 = "#${c.base08}";
+                color9 = "#${c.base09}";
+
+                # green
+                color2 = "#${c.base0B}";
+                color10 = "#${c.base05}";
+
+                # yellow
+                color3 = "#${c.base0A}";
+                color11 = "#${c.base04}";
+
+                # blue
+                color4 = "#${c.base0D}";
+                color12 = "#${c.base03}";
+
+                # magenta
+                color5 = "#${c.base0F}";
+                color13 = "#${c.base0E}";
+
+                # cyan
+                color6 = "#${c.base0C}";
+                color14 = "#${c.base02}";
+
+                # white
+                color7 = "#${c.base01}";
+                color15 = "#${c.base00}";
+            };
         };
-    };
 
     programs.chromium.enable = true;
 
@@ -241,10 +305,10 @@
      unzip
      wl-clipboard
      wev
-     hyprpaper
      brlaser
      ghostscript
      sops
+     gamescope
    ];
 
   services.hyprpaper = {
@@ -253,10 +317,15 @@
       ipc = "on";
       splash = false;
       preload = [
-        "/home/niko/Pictures/solarized_light_wallpaper.jpg"
+        "~/Pictures/SKALD-MapAndWallpaper/Wallpaper/Skald_Keyart_v2_Pixelated_4K.png"
       ];
       wallpaper = [
-        "DP-2,/home/niko/Pictures/solarized_light_wallpaper.jpg"
+        # "eDP-1,~/Pictures/SKALD-MapAndWallpaper/Wallpaper/Skald_Keyart_v2_Pixelated_4K.png"
+        {
+            monitor = "";
+            path = "~/Pictures/SKALD-MapAndWallpaper/Wallpaper/Skald_Keyart_v2_Pixelated_4K.png";
+            fit_mode = "fill";
+        }
       ];
     };
   };
@@ -274,6 +343,73 @@
   services.playerctld = {
     enable = true;
   };
+
+    programs.nvf = {
+        enable = true;
+        enableManpages = true;
+        defaultEditor = true;
+
+        settings.vim = {
+            lineNumberMode = "relNumber";
+            options = {
+                cursorline = true;
+                colorcolumn = "80";
+                tabstop = 4;
+                shiftwidth = 4;
+                softtabstop = 4;
+            };
+            theme = {
+                enable = true;
+                name = "base16";
+                transparent = true;
+
+                base16-colors = {
+                    base00 = c.base00;
+                    #base00 = "#282828";
+                    base01 = "#${c.base01}";
+                    base02 = "#${c.base02}";
+                    base03 = "#${c.base03}";
+                    base04 = "#${c.base04}";
+                    base05 = "#${c.base05}";
+                    base06 = "#${c.base06}";
+                    base07 = "#${c.base07}";
+                    base08 = "#${c.base08}";
+                    base09 = "#${c.base09}";
+                    base0A = "#${c.base0A}";
+                    base0B = "#${c.base0B}";
+                    base0C = "#${c.base0C}";
+                    base0D = "#${c.base0D}";
+                    base0E = "#${c.base0E}";
+                    base0F = "#${c.base0F}";
+                };
+            };
+            tabline.nvimBufferline = {
+                enable = false;
+            };
+            keymaps = [
+                {
+                    mode = "n";
+                    key = "<Tab>";
+                    action = ">>";
+                }
+                {
+                    mode = "n";
+                    key = "<S-Tab>";
+                    action = "<<";
+                }
+                {
+                    mode = "v";
+                    key = "<Tab>";
+                    action = ">gv";
+                }
+                {
+                    mode = "v";
+                    key = "<S-Tab>";
+                    action = "<gv";
+                }
+            ];
+        };
+    };
 
   # Do not change!
   home.stateVersion = "25.05";

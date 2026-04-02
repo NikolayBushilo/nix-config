@@ -10,7 +10,7 @@
         ../../git
         #../../github
         ../../lf
-        ../../nvf
+        # ../../nvf
         ../../ripgrep
         ../../ssh
         ../../tmux
@@ -19,5 +19,6 @@
         ../../wifitui
         ../../zoxide
         ../../framework-tool-tui
+        ../../brightnessctl
     ];
 }
