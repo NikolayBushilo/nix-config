@@ -10,25 +10,20 @@ in {
     users.users.niko = {
         isNormalUser = true;
         shell = pkgs.zsh;
-        extraGroups = ifTheyExist [
+        #extraGroups = ifTheyExist [
+        extraGroups = [
             "audio"
-            "deluge"
             "docker"
             "git"
             "i2c"
-            "libvirtd"
-            "minecraft"
-            "mysql"
             "networkmanager"
             "plugdev"
             "podman"
-            "tss"
             "video"
             "wheel"
             "lp"
             "scanner"
-            "dialout"
-            "wireshark"
+            "input"
         ];
 
     openssh.authorizedKeys.keyFiles = [

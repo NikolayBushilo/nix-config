@@ -13,6 +13,11 @@
 #  Index:
 #   1. Flake Stuff..............................................
 #   2. Host Configuration.......................................
+#     2.1 Sops..................................................
+#     2.3 Networking............................................
+#     2.4 System Packages.......................................
+#     2.5 Services..............................................
+#     2.6 Misc..................................................
 #   3. Home-manager Configuration...............................
 #----------------------------------------------------------------
 
@@ -22,184 +27,219 @@
 
 
 {
-  inputs,
-  outputs,
-  lib,
-  config,
-  pkgs,
-  nix-colors,
-  ...
+    inputs,
+    outputs,
+    lib,
+    config,
+    pkgs,
+    nix-colors,
+    ...
 }: 
 {
-  imports = [
-    # Hardware stuff
-    inputs.hardware.nixosModules.framework-13-7040-amd
-    ./hardware-configuration.nix
-    
-    # Enable home-manager as a NixOS module
-    inputs.home-manager.nixosModules.home-manager
+    imports = [
+        inputs.hardware.nixosModules.framework-13-7040-amd
+        ./hardware-configuration.nix
 
-    inputs.sops-nix.nixosModules.sops
+        # Enable home-manager as a NixOS module
+        inputs.home-manager.nixosModules.home-manager
 
-    # Users
-    ../../users/niko
+        inputs.sops-nix.nixosModules.sops
 
-    # Features
-    ../../features/groups/wayland_desktop
-    ../../features/groups/cli
-    # ../../features/github
-    ../../features/firefox
-    ../../features/fonts
-    ../../features/bitwarden
-    ../../features/dolphin
-    ../../features/freecad
-    ../../features/gimp
-    ../../features/grimblast
-    ../../features/gwenview
-    ../../features/imv
-    ../../features/inkscape
-    ../../features/kitty
-    ../../features/krita
-    ../../features/obsidian
-    ../../features/orca-slicer
-    ../../features/prusa-slicer
-    ../../features/prismlauncher
-    ../../features/rofi
-    ../../features/steam
+        # Users
+        ../../users/niko
 
-  ];
+        # Features
+        ../../features/groups/wayland_desktop
+        ../../features/groups/cli
+        # ../../features/github
+        ../../features/firefox
+        ../../features/fonts
+        ../../features/bitwarden
+        ../../features/dolphin
+        ../../features/freecad
+        ../../features/gimp
+        ../../features/grimblast
+        ../../features/gwenview
+        ../../features/imv
+        ../../features/inkscape
+        #../../features/kitty
+        ../../features/krita
+        ../../features/obsidian
+        ../../features/orca-slicer
+        ../../features/prusa-slicer
+        ../../features/prismlauncher
+        ../../features/rofi
+        ../../features/steam
 
-  nixpkgs = {
-    overlays = [
-      # Add overlays your own flake exports (from overlays and pkgs dir):
-      outputs.overlays.additions
-      outputs.overlays.modifications
-      outputs.overlays.unstable-packages
-
-      # You can also add overlays exported from other flakes:
-      # neovim-nightly-overlay.overlays.default
     ];
-    config = {
-      allowUnfree = true;
-    };
-  };
 
-  nix = let
-    flakeInputs = lib.filterAttrs (_: lib.isType "flake") inputs;
-  in {
-    settings = {
-      # Enable flakes and new 'nix' command
-      experimental-features = "nix-command flakes";
+    nixpkgs = {
+        overlays = [
+            # Add overlays your own flake exports (from overlays and pkgs dir):
+            outputs.overlays.additions
+            outputs.overlays.modifications
+            outputs.overlays.unstable-packages
+
+            # You can also add overlays exported from other flakes:
+            # neovim-nightly-overlay.overlays.default
+        ];
+        config = {
+            allowUnfree = true;
+        };
     };
 
-  channel.enable = false;
+    nix = let
+        flakeInputs = lib.filterAttrs (_: lib.isType "flake") inputs;
+    in {
+        settings = {
+            # Enable flakes and new 'nix' command
+            experimental-features = "nix-command flakes";
+        };
+
+        channel.enable = false;
   };
 
 #----------------------------------------------------------------
 # 2. Host Configuration
 #----------------------------------------------------------------
 
-  # Sops
-  sops.defaultSopsFile = ./secrets.yaml;
-  sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+# 2.1 Sops
+    sops = {
+        defaultSopsFile = ./secrets.yaml;
+        age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+        secrets.laptop_secret = {};
+    };
+    
+# 2.2 Networking
+    networking = {
+        networkmanager = {
+            enable = true;
+            wifi.powersave = false;
+        };
 
-  sops.secrets.laptop_secret = {};
+        hostName = "laptop-fw13";
 
+        firewall.allowedTCPPorts = [ 44444 ];
+    };
 
-  # Device hostname
-  networking.hostName = "laptop-fw13";
-  
-  # Open ports in the firewall.
-  networking.firewall.allowedTCPPorts = [ 42420 ];
+# 2.3 System Packages
+    environment.systemPackages = with pkgs; [
+    ];
 
-  # Enable networking
-  networking.networkmanager = {
-    enable = true;
-    wifi.powersave = false;
-  };
+# 2.4 Services
 
-  # Set your time zone.
-  time.timeZone = "Europe/Paris";
+    # Enable CUPS to print documents.
+    services.printing.enable = true;
 
-  # Select internationalisation properties.
-  i18n.defaultLocale = "en_US.UTF-8";
+    # Gnome Keyring   
+    services.gnome.gnome-keyring.enable = true;
 
-  i18n.extraLocaleSettings = {
-    LC_ADDRESS = "fr_FR.UTF-8";
-    LC_IDENTIFICATION = "fr_FR.UTF-8";
-    LC_MEASUREMENT = "fr_FR.UTF-8";
-    LC_MONETARY = "fr_FR.UTF-8";
-    LC_NAME = "fr_FR.UTF-8";
-    LC_NUMERIC = "fr_FR.UTF-8";
-    LC_PAPER = "fr_FR.UTF-8";
-    LC_TELEPHONE = "fr_FR.UTF-8";
-    LC_TIME = "fr_FR.UTF-8";
-  };
+    services.getty = {
+        autologinUser = "niko";
+        autologinOnce = true;
+    };
 
+    # Enable sound with pipewire.
+    services.pulseaudio.enable = false;
+    security.rtkit.enable = true;
 
-  # Ly Display Manager
-  #services.displayManager.ly = {
-  #  enable = false;
-  #  x11Support = false;
-  #};
-
-  boot.extraModprobeConfig = ''
-  options mt7921e disable_ps=1
-  '';
-
-  # Enable CUPS to print documents.
-  services.printing.enable = true;
-
-  # enables support for SANE scanners
-  hardware.sane.enable = true; 
-
-  # Enable Polkit Agent
-  security.polkit.enable = true;
-  
-  # Gnome Keyring   
-  services.gnome.gnome-keyring.enable = true;
-
-  security.pam.services.login.enableGnomeKeyring = true;
-
-  services.getty = {
-    autologinUser = "niko";
-    autologinOnce = true;
-  };
-
-  # Enable sound with pipewire.
-  services.pulseaudio.enable = false;
-  security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-  };
-
-  hardware.bluetooth = {
-    enable = true;
-    powerOnBoot = true;
-    settings = {
-      General= {
-        Experimental = true;
-	FasConnectable = true;
-     };
-     Policy = {
-       AutoEnable = true;
-     };
-   };
-  };
-
-
-  # Install Packages
-  environment.systemPackages = with pkgs; [
-  ];
+    services.pipewire = {
+        enable = true;
+        alsa.enable = true;
+        alsa.support32Bit = true;
+        pulse.enable = true;
+    };
+    # Ly Display Manager
+    #services.displayManager.ly = {
+    #  enable = false;
+    #  x11Support = false;
+    #};
 
     services.xserver.xkbOptions = "caps:swapescape";
 
-  # Do not change!
-  system.stateVersion = "23.05";
+    services.keyd = {
+        enable = false;
 
+        keyboards = {
+            default = {
+                ids = [ "*" ];  # apply to all keyboards
+
+                settings = {
+                    main = {
+                        capslock = "esc";
+                        esc = "capslock";
+                    };
+                };
+            };
+        };
+    };
+
+    #systemd.services.keyd.serviceConfig.NoNewPrivileges = lib.mkForce false;
+    #systemd.services.keyd.serviceConfig.CapabilityBoundingSet = lib.mkForce [
+    #    "CAP_SETGID"
+    #    "CAP_SETUID"
+    #    "CAP_SYS_ADMIN"
+    #    "CAP_SYS_NICE"
+    #    "CAP_IPC_LOCK"
+    #];
+
+# 2.5 Misc
+
+    # Set your time zone.
+    time.timeZone = "Europe/Paris";
+
+    # Select internationalisation properties.
+    i18n = {
+        defaultLocale = "en_US.UTF-8";
+
+        extraLocaleSettings = {
+            LC_ADDRESS = "fr_FR.UTF-8";
+            LC_IDENTIFICATION = "fr_FR.UTF-8";
+            LC_MEASUREMENT = "fr_FR.UTF-8";
+            LC_MONETARY = "fr_FR.UTF-8";
+            LC_NAME = "fr_FR.UTF-8";
+            LC_NUMERIC = "fr_FR.UTF-8";
+            LC_PAPER = "fr_FR.UTF-8";
+            LC_TELEPHONE = "fr_FR.UTF-8";
+            LC_TIME = "fr_FR.UTF-8";
+        };
+    };
+
+    boot.extraModprobeConfig = ''
+    options mt7921e disable_ps=1
+    '';
+
+
+
+    # Enable Polkit Agent
+    security = {
+        polkit.enable = true;
+        pam.services.login.enableGnomeKeyring = true;
+    };
+  
+    hardware = {
+        # enables support for SANE scanners
+        sane.enable = true; 
+
+        bluetooth = {
+            enable = true;
+            powerOnBoot = true;
+            settings = {
+                General= {
+                    Experimental = true;
+                    FasConnectable = true;
+                };
+                Policy = {
+                    AutoEnable = true;
+                };
+            };
+        };
+    };
+
+    users.groups.keyd = {};
+
+    # Do not change!
+    system.stateVersion = "23.05";
 
 #----------------------------------------------------------------
 # 3. Home-manager Configuration
@@ -214,7 +254,7 @@
 
         imports = [ inputs.nix-colors.homeManagerModules.default inputs.nvf.homeManagerModules.nvf ];
 
-        colorScheme = inputs.nix-colors.colorSchemes.windows-95;
+        colorScheme = inputs.nix-colors.colorSchemes.tokyo-night-terminal-dark;
 
         programs.kitty = {
             enable = true;
@@ -281,138 +321,138 @@
             };
         };
 
-    programs.chromium.enable = true;
+        programs.chromium.enable = true;
 
-    programs.gpg = {
-        enable = true;
-    };
-
-    programs.gh = {
-        enable = true;
-    };
-
-    services.gpg-agent = {
-        enable = true;
-        enableZshIntegration = true;
-        pinentry.package = pkgs.pinentry-curses;
-    };
-
-   # Install Packages
-   home.packages = with pkgs; [
-     file
-     appimage-run
-     gcr # For Gnome keyRing
-     unzip
-     wl-clipboard
-     wev
-     brlaser
-     ghostscript
-     sops
-     gamescope
-   ];
-
-  services.hyprpaper = {
-    enable = true;
-    settings = {
-      ipc = "on";
-      splash = false;
-      preload = [
-        "~/Pictures/SKALD-MapAndWallpaper/Wallpaper/Skald_Keyart_v2_Pixelated_4K.png"
-      ];
-      wallpaper = [
-        # "eDP-1,~/Pictures/SKALD-MapAndWallpaper/Wallpaper/Skald_Keyart_v2_Pixelated_4K.png"
-        {
-            monitor = "";
-            path = "~/Pictures/SKALD-MapAndWallpaper/Wallpaper/Skald_Keyart_v2_Pixelated_4K.png";
-            fit_mode = "fill";
-        }
-      ];
-    };
-  };
-  
-  # Nicely reload system units when changing configs
-  systemd.user.startServices = "sd-switch";
-
-  # Swap caps_lock and escape
-  home.keyboard = {
-    layout = "us";
-    variant = "altgr-intl";
-    options = [ "compose:ralt" "caps:swapescape" ];
-  };
-
-  services.playerctld = {
-    enable = true;
-  };
-
-    programs.nvf = {
-        enable = true;
-        enableManpages = true;
-        defaultEditor = true;
-
-        settings.vim = {
-            lineNumberMode = "relNumber";
-            options = {
-                cursorline = true;
-                colorcolumn = "80";
-                tabstop = 4;
-                shiftwidth = 4;
-                softtabstop = 4;
-            };
-            theme = {
-                enable = true;
-                name = "base16";
-                transparent = true;
-
-                base16-colors = {
-                    base00 = c.base00;
-                    #base00 = "#282828";
-                    base01 = "#${c.base01}";
-                    base02 = "#${c.base02}";
-                    base03 = "#${c.base03}";
-                    base04 = "#${c.base04}";
-                    base05 = "#${c.base05}";
-                    base06 = "#${c.base06}";
-                    base07 = "#${c.base07}";
-                    base08 = "#${c.base08}";
-                    base09 = "#${c.base09}";
-                    base0A = "#${c.base0A}";
-                    base0B = "#${c.base0B}";
-                    base0C = "#${c.base0C}";
-                    base0D = "#${c.base0D}";
-                    base0E = "#${c.base0E}";
-                    base0F = "#${c.base0F}";
-                };
-            };
-            tabline.nvimBufferline = {
-                enable = false;
-            };
-            keymaps = [
-                {
-                    mode = "n";
-                    key = "<Tab>";
-                    action = ">>";
-                }
-                {
-                    mode = "n";
-                    key = "<S-Tab>";
-                    action = "<<";
-                }
-                {
-                    mode = "v";
-                    key = "<Tab>";
-                    action = ">gv";
-                }
-                {
-                    mode = "v";
-                    key = "<S-Tab>";
-                    action = "<gv";
-                }
-            ];
+        programs.gpg = {
+            enable = true;
         };
-    };
 
-  # Do not change!
-  home.stateVersion = "25.05";
- };
+        programs.gh = {
+            enable = true;
+        };
+
+        services.gpg-agent = {
+            enable = true;
+            enableZshIntegration = true;
+            pinentry.package = pkgs.pinentry-curses;
+        };
+
+        # Install Packages
+        home.packages = with pkgs; [
+             file
+             appimage-run
+             gcr # For Gnome keyRing
+             unzip
+             wl-clipboard
+             wev
+             brlaser
+             ghostscript
+             sops
+             gamescope
+             vintagestory
+        ];
+
+        services.hyprpaper = {
+            enable = true;
+            settings = {
+                ipc = "on";
+                splash = false;
+                preload = [
+                    "~/Pictures/SKALD-MapAndWallpaper/Wallpaper/Skald_Keyart_v2_Pixelated_4K.png"
+                ];
+                wallpaper = [
+                    {
+                    monitor = "";
+                    path = "~/Pictures/SKALD-MapAndWallpaper/Wallpaper/Skald_Keyart_v2_Pixelated_4K.png";
+                    fit_mode = "fill";
+                    }
+                ];
+            };
+        };
+  
+        # Swap caps_lock and escape
+        home.keyboard = {
+            layout = "us";
+            variant = "altgr-intl";
+            options = [ "compose:ralt" "caps:swapescape"]; 
+        };
+
+        services.playerctld = {
+            enable = true;
+        };
+
+        programs.nvf = {
+            enable = true;
+            enableManpages = true;
+            defaultEditor = true;
+
+            settings.vim = {
+                lineNumberMode = "relNumber";
+                options = {
+                    cursorline = true;
+                    colorcolumn = "80";
+                    tabstop = 4;
+                    shiftwidth = 4;
+                    softtabstop = 4;
+                };
+                theme = {
+                    enable = true;
+                    name = "base16";
+                    transparent = true;
+
+                    base16-colors = {
+                        base00 = c.base00;
+                        #base00 = "#282828";
+                        base01 = "#${c.base01}";
+                        base02 = "#${c.base02}";
+                        base03 = "#${c.base03}";
+                        base04 = "#${c.base04}";
+                        base05 = "#${c.base05}";
+                        base06 = "#${c.base06}";
+                        base07 = "#${c.base07}";
+                        base08 = "#${c.base08}";
+                        base09 = "#${c.base09}";
+                        base0A = "#${c.base0A}";
+                        base0B = "#${c.base0B}";
+                        base0C = "#${c.base0C}";
+                        base0D = "#${c.base0D}";
+                        base0E = "#${c.base0E}";
+                        base0F = "#${c.base0F}";
+                    };
+                };
+                tabline.nvimBufferline = {
+                    enable = false;
+                };
+                keymaps = [
+                    {
+                        mode = "n";
+                        key = "<Tab>";
+                        action = ">>";
+                    }
+                    {
+                        mode = "n";
+                        key = "<S-Tab>";
+                        action = "<<";
+                    }
+                    {
+                        mode = "v";
+                        key = "<Tab>";
+                        action = ">gv";
+                    }
+                    {
+                        mode = "v";
+                        key = "<S-Tab>";
+                        action = "<gv";
+                    }
+                ];
+            };
+        };
+
+        # Nicely reload system units when changing configs
+        systemd.user.startServices = "sd-switch";
+
+        # Do not change!
+        home.stateVersion = "25.05";
+    };
 
 }

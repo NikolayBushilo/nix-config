@@ -1,6 +1,7 @@
 {config, lib, ...}:
 let
     user = "niko";
+    c = config.colorScheme.palette;
 in
 {
 
@@ -15,57 +16,57 @@ in
             shell_integration=false;
 
             # The basic colors
-            foreground = "#657b83";
-            background = "#fdf6e3";
-            selection_foreground = "#586e75";
-            selection_background = "#eee8d5";
+            foreground = "#${c.base04}";
+            background = "#${c.base00}";
+            selection_foreground = "#${c.base05}";
+            selection_background = "#${c.base01}";
 
             # Cursor colors
-            cursor = "#657b83";
-            cursor_text_color = "#fdf6e3";
+            cursor = "#${c.base04}";
+            cursor_text_color = "#${c.base00}";
 
             # kitty window border colors
-            active_border_color = "#cb4b16";
-            inactive_border_color = "#93a1a1";
+            active_border_color = "#${c.base09}";
+            inactive_border_color = "#${c.base02}";
 
             # Tab bar colors
-            active_tab_background = "#fdf6e3";
-            active_tab_foreground = "#657b83";
-            inactive_tab_background = "#93a1a1";
-            inactive_tab_foreground = "#fdf6e3";
+            active_tab_background = "#${c.base00}";
+            active_tab_foreground = "#${c.base04}";
+            inactive_tab_background = "#${c.base02}";
+            inactive_tab_foreground = "#${c.base00}";
 
             # The basic 16 colors
             # black
-            color0 = "#073642";
-            color8 = "#93a1a1";
+            color0 = "#${c.base06}";
+            color8 = "#${c.base02}";
 
             # red
-            color1 = "#dc322f";
-            color9 = "#cb4b16";
+            color1 = "#${c.base08}";
+            color9 = "#${c.base09}";
 
             # green
-            color2 = "#859900";
-            color10 = "#586e75";
+            color2 = "#${c.base0B}";
+            color10 = "#${c.base05}";
 
             # yellow
-            color3 = "#b58900";
-            color11 = "#657b83";
+            color3 = "#${c.base0A}";
+            color11 = "#${c.base04}";
 
             # blue
-            color4 = "#268bd2";
-            color12 = "#839496";
+            color4 = "#${c.base0D}";
+            color12 = "#${c.base03}";
 
             # magenta
-            color5 = "#d33682";
-            color13 = "#6c71c4";
+            color5 = "#${c.base0F}";
+            color13 = "#${c.base0E}";
 
             # cyan
-            color6 = "#2aa198";
-            color14 = "#93a1a1";
+            color6 = "#${c.base0C}";
+            color14 = "#${c.base02}";
 
             # white
-            color7 = "#eee8d5";
-            color15 = "#fdf6e3";
+            color7 = "#${c.base01}";
+            color15 = "#${c.base00}";
         };
     };
 }
