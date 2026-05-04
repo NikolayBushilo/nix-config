@@ -119,7 +119,7 @@
 
         hostName = "laptop-fw13";
 
-        firewall.allowedTCPPorts = [ 44444 ];
+        firewall.allowedTCPPorts = [ 44444 41549 44081];
     };
 
 # 2.3 System Packages
@@ -339,17 +339,18 @@
 
         # Install Packages
         home.packages = with pkgs; [
-             file
-             appimage-run
-             gcr # For Gnome keyRing
-             unzip
-             wl-clipboard
-             wev
-             brlaser
-             ghostscript
-             sops
-             gamescope
-             vintagestory
+            file
+            appimage-run
+            gcr # For Gnome keyRing
+            unzip
+            wl-clipboard
+            wev
+            brlaser
+            ghostscript
+            sops
+            gamescope
+            vintagestory
+            openmw
         ];
 
         services.hyprpaper = {
@@ -387,6 +388,14 @@
             defaultEditor = true;
 
             settings.vim = {
+                ui.noice = {
+                    enable = true;
+                    setupOpts = {
+                    };
+                };
+                notify.nvim-notify = {
+                    enable = true;
+                };
                 lineNumberMode = "relNumber";
                 options = {
                     cursorline = true;
@@ -394,6 +403,52 @@
                     tabstop = 4;
                     shiftwidth = 4;
                     softtabstop = 4;
+                };
+                globals = {
+                    mapleader = " ";
+                    maplocalleader = ",";
+                };
+
+                extraPlugins = {
+                    vim-tmux-navigator = {
+                        package = pkgs.vimPlugins.vim-tmux-navigator;
+
+                        # plugin-local setup
+                        setup = ''
+                            vim.g.tmux_navigator_no_mappings = 1
+                        '';
+                    };
+                    #vim-tpipeline = {
+                    #    package = pkgs.vimPlugins.vim-tpipeline;
+
+                    #        setup = ''
+                    #        vim.g.tpipeline_autoembed = 0
+                    #        '';
+                    #        #vim.g.tpipeline_clearstl = 1
+                    #};
+                };
+
+                luaConfigRC = {
+                    tmuxNavigatorKeymaps = ''
+                        local map = vim.keymap.set
+
+                        map('n', '<C-h>', '<cmd>TmuxNavigateLeft<CR>')
+                        map('n', '<C-j>', '<cmd>TmuxNavigateDown<CR>')
+                        map('n', '<C-k>', '<cmd>TmuxNavigateUp<CR>')
+                        map('n', '<C-l>', '<cmd>TmuxNavigateRight<CR>')
+                    '';
+                };
+
+                statusline.lualine.enable = true;
+                treesitter.enable = true;
+                lsp.enable = true;
+                languages = {
+                    enableTreesitter = true;
+                    clang.enable = true;
+                    cmake.enable = true;
+                    nix.enable = true;
+                    css.enable = true;
+                    html.enable = true;
                 };
                 theme = {
                     enable = true;
@@ -428,21 +483,102 @@
                         mode = "n";
                         key = "<Tab>";
                         action = ">>";
+                        desc = "Indent right";
                     }
                     {
                         mode = "n";
                         key = "<S-Tab>";
                         action = "<<";
+                        desc = "Indent left";
                     }
                     {
                         mode = "v";
                         key = "<Tab>";
                         action = ">gv";
+                        desc = "Indent right";
                     }
                     {
                         mode = "v";
                         key = "<S-Tab>";
                         action = "<gv";
+                        desc = "Indent left";
+                    }
+                    {
+                        mode = "n";
+                        key = "<C-h>";
+                        action = "<C-w>h";
+                    }
+                    {
+                        mode = "n";
+                        key = "<C-l>";
+                        action = "<C-w>l";
+                    }
+                    {
+                        mode = "n";
+                        key = "<C-j>";
+                        action = "<C-w>j";
+                    }
+                    {
+                        mode = "n";
+                        key = "<C-k>";
+                        action = "<C-w>k";
+                    }
+                    {
+                        mode = "v";
+                        key = "<leader>/";
+                        action = "gc";
+                    }
+                    {
+                        mode = "n";
+                        key = "gd";
+                        lua = true;
+                        action = ''
+                        function()
+                        vim.lsp.buf.definition()
+                        end
+                        '';
+                        desc = "Go to definition";
+                    }
+                    {
+                        mode = "n";
+                        key = "<leader>]";
+                        lua = true;
+                        action = ''
+                            function()
+                            vim.cmd("normal! \\<C-i>")
+                            end
+                        '';
+                        desc = "Jump forward";
+                    }
+                    {
+                        mode = "n";
+                        key = "<leader>[";
+                        action = "<C-o>";
+                        desc = "Jump back";
+                    }
+                    {
+                        mode = "n";
+                        key = "<leader>n";
+                        action = "<cmd>tabnext<CR>";
+                        desc = "Go to next tab";
+                    }
+                    {
+                        mode = "n";
+                        key = "<leader>p";
+                        action = "<cmd>tabprevious<CR>";
+                        desc = "Go to previous tab";
+                    }
+                    {
+                        mode = "n";
+                        key = "<leader>m";
+                        action = "<cmd>tab split<CR>";
+                        desc = "Open the current window in a new tab (maximize)";
+                    }
+                    {
+                        mode = "n";
+                        key = "<leader>M";
+                        action = "<cmd>tab close<CR>";
+                        desc = "Close current tab";
                     }
                 ];
             };

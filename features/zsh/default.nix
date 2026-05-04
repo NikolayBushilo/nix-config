@@ -21,10 +21,22 @@ in
             grep="rg";
             cat="bat";
             v="nvim";
+            tn="tmux new-session -s";
+            tl="tmux list-sessions";
+            ta="tmux attach-session";
         };
-        # initExtra = ''
-        #     PROMPT="\[\033[38;2;199;60;3m\]\w > \[\033[0m\]"
-        # '';
+        initContent = ''
+            eval "$(direnv hook zsh)"
+            export DIRENV_LOG_FORMAT=""
+            export NIX_DIRENV_LOG_FORMAT=""
+            precmd() {
+            if [[ -n "$IN_NIX_SHELL" ]]; then
+            PROMPT="%F{blue}%n@%m %~ %# %f"
+            else
+            PROMPT="%n@%m %~ %# "
+            fi
+            }
+        '';
   };
 
 }

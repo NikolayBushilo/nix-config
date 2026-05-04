@@ -20,5 +20,6 @@
         ../../zoxide
         ../../framework-tool-tui
         ../../brightnessctl
+        ../../direnv
     ];
 }
