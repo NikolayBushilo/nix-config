@@ -11,6 +11,7 @@ in
         # themeFile = "citylights";
         settings = {
             font_family="JetBrains Mono Medium";
+            # font_family="ToshibaSat 8x16";
             font_size= 15;
             window_margin_width=4;
             shell_integration=false;

@@ -29,7 +29,22 @@ in
         # Colors
         "col.active_border" = "rgb(dc322f) rgb(dc322f)";
         "col.inactive_border" = "rgb(fdf6e3) rgb(fdf6e3)";
+        # monitor = [
+        #     "eDP-1,2256x1504@60,0x0,2"
+        #     # Left vertical
+        #     "DP-10,1080x1920@60,0x752,1" #transform,1
+        #     # Right vertical
+        #     # "DP-9,1080x1920@75,1080x0,1,transform,1"
+        #     # Laptop below right monitor
+        # ];
         };
+        monitor = [
+            "desc:BOE 0x0BCA,2256x1504@60,1080x1920,2"
+
+            "desc:Iiyama North America PLE2483H,1920x1080@60,0x0,1,transform,1"
+
+            "desc:G.VISION 27XCF,1920x1080@60,1080x0,1,transform,3"
+        ];
         decoration = {
             #rounding = 8;
             #rounding_power = 3;

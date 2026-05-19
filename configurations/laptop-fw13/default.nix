@@ -45,6 +45,7 @@
 
         inputs.sops-nix.nixosModules.sops
 
+
         # Users
         ../../users/niko
 
@@ -183,6 +184,7 @@
     #    "CAP_IPC_LOCK"
     #];
 
+
 # 2.5 Misc
 
     # Set your time zone.
@@ -254,13 +256,14 @@
 
         imports = [ inputs.nix-colors.homeManagerModules.default inputs.nvf.homeManagerModules.nvf ];
 
-        colorScheme = inputs.nix-colors.colorSchemes.tokyo-night-terminal-dark;
+        colorScheme = inputs.nix-colors.colorSchemes.solarized-light;
 
         programs.kitty = {
             enable = true;
             # themeFile = "Solarized_Light";
             settings = {
                 font_family="JetBrains Mono Medium";
+                # font_family="AcPlus ToshibaSat 8x16";
                 font_size=14;
                 window_margin_width=4;
                 shell_integration=true;

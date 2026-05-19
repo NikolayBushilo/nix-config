@@ -169,7 +169,7 @@
 
       # Configuration used on my M4 MacBook
       "standalone@macbook" = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.x86_64-linux;
+        pkgs = nixpkgs.legacyPackages.aarch64-darwin;
         extraSpecialArgs = {inherit inputs outputs;};
         modules = [
           ./home-manager/home.nix
