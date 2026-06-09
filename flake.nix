@@ -18,6 +18,7 @@
 #     1.3. Overlays.............................................
 #     1.4. NixOS Modules........................................
 #     1.5. Home-manager Modules.................................
+#     1.6. Development Templates................................
 #   2. NixOS configuration entrypoint w/ Home-manager module....
 #     2.1. Framework 13 laptop..................................
 #     2.2. MS-01 homelab server.................................
@@ -122,6 +123,15 @@
 #============================
 
     homeManagerModules = import ./modules/home-manager;
+
+# 1.6. Development Templates
+#=============================
+    templates = {
+        cpp = {
+            path = ./templates/cpp;
+            description = "C++ project with Nix, CMake, Clang and Ninja";
+        };
+    };
 
 #----------------------------------------------------------------
 # 2. Nixos configuration entrypoint w/ Home-manager as a module
