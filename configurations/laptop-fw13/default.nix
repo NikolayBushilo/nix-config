@@ -120,7 +120,7 @@
 
         hostName = "laptop-fw13";
 
-        firewall.allowedTCPPorts = [ 44444 41549 44081];
+        firewall.allowedTCPPorts = [ 44444 43939 ];
     };
 
 # 2.3 System Packages
@@ -183,6 +183,10 @@
     #    "CAP_SYS_NICE"
     #    "CAP_IPC_LOCK"
     #];
+
+    # For Mullvad vpn
+    services.resolved.enable = true;
+    services.mullvad-vpn.enable = true;
 
 
 # 2.5 Misc
@@ -354,6 +358,7 @@
             gamescope
             vintagestory
             openmw
+            bluetuith
         ];
 
         services.hyprpaper = {

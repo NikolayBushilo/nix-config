@@ -52,7 +52,6 @@ in
         windowrule = [
         ];
         dwindle = {
-            pseudotile = true;
             force_split = 2;
         };
         ecosystem = {
