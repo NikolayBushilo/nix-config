@@ -10,7 +10,7 @@
         let
             pkgs = import nixpkgs {inherit system; };
         in {
-            devShells.${system} = {
+            devShells = {
                 default = pkgs.mkShell {
                     buildInputs = with pkgs; [
                         cmake
@@ -29,7 +29,7 @@
                 };
             };
 
-            packages.${system}.default = 
+            packages.default = 
                 pkgs.callPackage ./default.nix {};
         });
 }
