@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Library
 # ---------------------------------------
 add_library(cpp_template_lib
-    src/app.cpp
+    src/app.cxx
 )
 
 target_include_directories(cpp_template_lib
@@ -24,7 +24,7 @@ set_project_warnings(cpp_template_lib)
 # Executable
 # ---------------------------------------
 add_executable(cpp-template
-    src/main.cpp
+    src/main.cxx
 )
 
 target_link_libraries(cpp-template
