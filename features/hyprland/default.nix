@@ -143,6 +143,13 @@ in
             ", XF86AudioNext, exec, playerctl next"
             ", XF86AudioMedia, exec, kitty sudo framework-tool-tui"
         ];
+        bindm = [
+            "$mod, mouse:272, movewindow"
+            "$mod, mouse:273, resizewindow"
+            # Trackpad Only
+            "$mod, Shift_L, movewindow"
+            "$mod, Control_L, resizewindow"
+        ];
     };
     };
 }
