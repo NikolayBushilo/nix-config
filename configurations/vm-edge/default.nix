@@ -58,7 +58,7 @@ in {
         #../../features/ripgrep
         #../../features/zoxide
         #../../features/btop
-        ../../features/minecraft
+        #../../features/minecraft
         #../../features/cloudflared
     ];
 
@@ -115,6 +115,21 @@ in {
 
 # 2.2 Proxmox
 
+    virtualisation.proxmox = {
+        qemuConf = {
+            cores = 4;
+            memory = 16384;
+            bios = "ovmf";
+            name = "vm-core";
+            agent = true;
+        };
+        qemuExtraConf = {
+            cpu = "host";
+            onboot = 1;
+        };
+        filenameSuffix = "vm-edge";
+    };
+
 # 2.3 Networking
     networking.useNetworkd = true;
 
@@ -166,6 +181,8 @@ in {
     #        };
     #    };
     #};
+
+    services.qemuGuest.enable = true;
 
 # 2.6 User
     users.mutableUsers = true;
