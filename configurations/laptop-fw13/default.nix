@@ -133,7 +133,10 @@
 # 2.4 Services
 
     # Enable CUPS to print documents.
-    services.printing.enable = true;
+    services.printing = {
+        enable = true;
+        drivers = [ pkgs.brlaser ];
+    };
 
     # Gnome Keyring   
     services.gnome.gnome-keyring.enable = true;
@@ -190,6 +193,12 @@
     # For Mullvad vpn
     services.resolved.enable = true;
     services.mullvad-vpn.enable = true;
+
+    # IOS Specifics
+    services.usbmuxd = {
+        enable = true;
+        package = pkgs.usbmuxd2;
+    };
 
 
 # 2.5 Misc
@@ -362,6 +371,10 @@
             vintagestory
             openmw
             bluetuith
+
+            # IOS
+            libimobiledevice
+            ifuse
         ];
 
         services.hyprpaper = {

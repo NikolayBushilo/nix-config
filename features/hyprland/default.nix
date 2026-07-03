@@ -43,7 +43,8 @@ in
 
             "desc:Iiyama North America PLE2483H,1920x1080@60,0x0,1,transform,1"
 
-            "desc:G.VISION 27XCF,1920x1080@60,1080x0,1,transform,3"
+            "desc:G.VISION 27XCF,1920x1080@60,1080x0,1"
+            # "desc:G.VISION 27XCF,1920x1080@60,1080x0,1,transform,3"
         ];
         decoration = {
             #rounding = 8;

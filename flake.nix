@@ -140,13 +140,13 @@
 # Available through 'nixos-rebuild --flake .#{host}'
 
     nixosConfigurations = {
-      # Framework 13 Laptop
+      # Framework 13 laptop
       "laptop-fw13" = nixpkgs.lib.nixosSystem {
         modules = [ ./configurations/laptop-fw13 ];
         specialArgs = {inherit inputs outputs self;};
       };
 
-      # MS-01 HomeLab Server
+      # MS-01 homelab server
       "ms-01" = nixpkgs.lib.nixosSystem {
         modules = [ ./configurations/ms-01 ];
         specialArgs = {inherit inputs outputs self;};
