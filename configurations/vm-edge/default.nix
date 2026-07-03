@@ -15,7 +15,7 @@
 #   1. Flake Stuff..............................................
 #   2. Virtual Machine Configuration............................
 #     2.1 Sops..................................................
-#     2.2 MicroVM...............................................
+#     2.2 Proxmox...............................................
 #     2.3 Networking............................................
 #     2.4 System Packages.......................................
 #     2.5 Services..............................................
@@ -40,8 +40,6 @@
 in {
     imports = [
         
-        # Microvm
-        inputs.microvm.nixosModules.microvm
 
         # Enable home-manager as a NixOS module
         #inputs.home-manager.nixosModules.home-manager
@@ -115,38 +113,7 @@ in {
         #};
     };
 
-# 2.2 MicroVM
-    microvm = {
-        # VM settings
-        mem = 16384;
-        vcpu = 4;
-
-        # Pass tap interface to host
-        interfaces = [
-            {
-                type = "tap";
-                id = "vm-edge";
-                mac = "02:00:00:00:00:01";
-            }
-        ];
-
-        # Persistant file systems
-        shares = [
-            {
-                proto = "virtiofs";
-                tag = "vm-edge-identities";
-                source = "data/identities";
-                mountPoint = "/data/identities";
-            }
-            #{
-            #    proto = "virtiofs";
-            #    tag = "vm-edge-services";
-            #    source = "/tank/data/services/minecraft/cobblemon";
-            #    mountPoint = "/vm-data/minecraft/cobblemon";
-            #}
-        ];
-
-    };
+# 2.2 Proxmox
 
 # 2.3 Networking
     networking.useNetworkd = true;

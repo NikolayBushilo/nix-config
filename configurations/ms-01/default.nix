@@ -46,7 +46,7 @@
     inputs.sops-nix.nixosModules.sops
 
     # MicroVM Host to manage vms
-    inputs.microvm.nixosModules.host
+    # inputs.microvm.nixosModules.host
 
     # Import User
     ../../users/niko
@@ -93,19 +93,6 @@
     sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
 
 # 2.2 MicroVM
-    microvm = {
-        host.enable = true;
-
-        autostart = [
-            "vm-edge"
-        ];
-
-        # Declare VMs
-        vms.vm-edge = {
-            flake = self;
-            updateFlake = "git+https://github.com/NikolayBushilo/nix-config?ref=main";
-        };
-    };
 
 
 # 2.3 Networking

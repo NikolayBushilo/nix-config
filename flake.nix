@@ -56,10 +56,6 @@
       url = "github:Infinidoge/nix-minecraft";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    microvm = {
-        url = "github:microvm-nix/microvm.nix";
-        inputs.nixpkgs.follows = "nixpkgs";
-    };
 
     sops-nix = {
         url = "github:mic92/sops-nix";
@@ -77,7 +73,6 @@
     nixpkgs,
     home-manager,
     nvf,
-    microvm,
     sops-nix,
     nix-colors,
     ...
@@ -146,7 +141,7 @@
         specialArgs = {inherit inputs outputs self;};
       };
 
-      # MS-01 homelab server
+      # [REPLACED BY PROXMOX] MS-01 homelab server 
       "ms-01" = nixpkgs.lib.nixosSystem {
         modules = [ ./configurations/ms-01 ];
         specialArgs = {inherit inputs outputs self;};
