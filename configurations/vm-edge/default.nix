@@ -48,6 +48,9 @@ in {
         # Sops-nix for secret decription
         inputs.sops-nix.nixosModules.sops
 
+        # Import Disk configuration
+        ./disk-configuration.nix
+
         # Features
         #../../features/zsh
         #../../features/bat

@@ -66,6 +66,11 @@
         url = "github:misterio77/nix-colors";
     };
 
+    disko = {
+        url = "github:nix-community/disko";
+        inputs.nixpkgs.follows = "nixpkgs";
+    };
+
   };
 
   outputs = {
@@ -75,6 +80,7 @@
     nvf,
     sops-nix,
     nix-colors,
+    disko,
     ...
   } @ inputs: let
     inherit (self) outputs;

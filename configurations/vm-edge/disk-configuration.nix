@@ -4,7 +4,7 @@
   disko.devices = {
     disk.main = {
       type = "disk";
-      device = "/dev/disk/by-id/virtio-os";
+      device = "/dev/sda";
 
       content = {
         type = "gpt";
