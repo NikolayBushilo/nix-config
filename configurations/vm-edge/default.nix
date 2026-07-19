@@ -14,13 +14,14 @@
 #  Index:
 #   1. Flake Stuff..............................................
 #   2. Virtual Machine Configuration............................
-#     2.1 Sops..................................................
-#     2.2 Proxmox...............................................
-#     2.3 Networking............................................
-#     2.4 System Packages.......................................
-#     2.5 Services..............................................
-#     2.6 Misc..................................................
-#     2.7 Users.................................................
+#     2.1 Bootloader............................................
+#     2.2 Sops..................................................
+#     2.3 Proxmox...............................................
+#     2.4 Networking............................................
+#     2.5 System Packages.......................................
+#     2.6 Services..............................................
+#     2.7 Misc..................................................
+#     2.8 Users.................................................
 #----------------------------------------------------------------
 
 #----------------------------------------------------------------
@@ -93,6 +94,10 @@ in {
 # 2. Virtual Machine Configuration
 #----------------------------------------------------------------
 
+# 2.1 Bootloader
+    boot.loader.systemd-boot.enable = true;
+    boot.loader.efi.canTouchEfiVariables = true;
+
 # 2.1 Sops
     sops = {
         defaultSopsFile = ./secrets.yaml;
@@ -115,20 +120,20 @@ in {
 
 # 2.2 Proxmox
 
-    virtualisation.proxmox = {
-        qemuConf = {
-            cores = 4;
-            memory = 16384;
-            bios = "ovmf";
-            name = "vm-core";
-            agent = true;
-        };
-        qemuExtraConf = {
-            cpu = "host";
-            onboot = 1;
-        };
-        filenameSuffix = "vm-edge";
-    };
+    # proxmox = {
+    #     qemuConf = {
+    #         cores = 4;
+    #         memory = 16384;
+    #         bios = "ovmf";
+    #         name = "vm-core";
+    #         agent = true;
+    #     };
+    #     qemuExtraConf = {
+    #         cpu = "host";
+    #         onboot = 1;
+    #     };
+    #     filenameSuffix = "vm-edge";
+    # };
 
 # 2.3 Networking
     networking.useNetworkd = true;
