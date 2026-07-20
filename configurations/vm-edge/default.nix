@@ -14,14 +14,15 @@
 #  Index:
 #   1. Flake Stuff..............................................
 #   2. Virtual Machine Configuration............................
-#     2.1 Bootloader............................................
-#     2.2 Sops..................................................
-#     2.3 Proxmox...............................................
-#     2.4 Networking............................................
-#     2.5 System Packages.......................................
-#     2.6 Services..............................................
-#     2.7 Misc..................................................
-#     2.8 Users.................................................
+#     2.1 Boot..................................................
+#     2.2 File Systems..........................................
+#     2.3 Sops..................................................
+#     2.4 Proxmox...............................................
+#     2.5 Networking............................................
+#     2.6 System Packages.......................................
+#     2.7 Services..............................................
+#     2.8 Misc..................................................
+#     2.9 Users.................................................
 #----------------------------------------------------------------
 
 #----------------------------------------------------------------
@@ -48,10 +49,12 @@ in {
         # Sops-nix for secret decription
         inputs.sops-nix.nixosModules.sops
 
-        # Import Disk configuration
+        # Import Disko + Disk configuration
+        inputs.disko.nixosModules.disko
         ./disk-configuration.nix
 
         # Features
+        ../../features/qemu-guest
         #../../features/zsh
         #../../features/bat
         #../../features/eza
@@ -97,11 +100,49 @@ in {
 # 2. Virtual Machine Configuration
 #----------------------------------------------------------------
 
-# 2.1 Bootloader
-    boot.loader.systemd-boot.enable = true;
-    boot.loader.efi.canTouchEfiVariables = true;
+# 2.1 Boot
+    boot = {
+        loader = {
+            systemd-boot.enable = true;
+            efi.canTouchEfiVariables = true;
+        };
+        supportedFilesystems = [ "zfs" ];
+        zfs = {
+            extraPools = [ "rpool" ];
+            # forceImportRoot = false;
+            # devNodes = "/dev/disk/by-path";
+            # requestEncryptionCredentials = false;
+        };
+        # initrd.kernelModules = [ "zfs" ];
+        # kernelModules = [ "zfs" ];
+        # initrd.availableKernelModules = [
+        #     "ahci"
+        #     "ata_piix"
+        #     "sd_mod"
+        #     "sr_mod"
+        #     "virtio_pci"
+        #     "virtio_blk"
+        #     "virtio_scsi"
+        # ];
+    };
 
-# 2.1 Sops
+# 2.2 File Systems
+    # fileSystems."/" = {
+    #     device = "rpool/root";
+    #     fsType = "zfs";
+    # };
+    #
+    # fileSystems."/nix" = {
+    #     device = "rpool/nix";
+    #     fsType = "zfs";
+    # };
+    #
+    # fileSystems."/data" = {
+    #     device = "rpool/persist";
+    #     fsType = "zfs";
+    # };
+    #
+# 2.3 Sops
     sops = {
         defaultSopsFile = ./secrets.yaml;
 
@@ -121,7 +162,7 @@ in {
         #};
     };
 
-# 2.2 Proxmox
+# 2.4 Proxmox
 
     # proxmox = {
     #     qemuConf = {
@@ -138,7 +179,9 @@ in {
     #     filenameSuffix = "vm-edge";
     # };
 
-# 2.3 Networking
+# 2.5 Networking
+    networking.hostId = "2feb1f61";
+
     networking.useNetworkd = true;
 
     networking.firewall.enable = true;
@@ -150,14 +193,14 @@ in {
 
 
 
-# 2.4 System Packages
+# 2.6 System Packages
     environment.systemPackages = with pkgs; [
         git
         kitty.terminfo
         lf
     ];
 
-# 2.5 Services
+# 2.7 Services
     services.openssh = {
         enable = true;
         settings.PasswordAuthentication = false;
@@ -190,9 +233,7 @@ in {
     #    };
     #};
 
-    services.qemuGuest.enable = true;
-
-# 2.6 User
+# 2.8 User
     users.mutableUsers = true;
     users.users.niko = {
         isNormalUser = true;
@@ -222,7 +263,7 @@ in {
         ];
     };
 
-# 2.7 Misc
+# 2.9 Misc
 
     security.sudo = {
         enable = true;
