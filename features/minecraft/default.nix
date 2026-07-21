@@ -11,6 +11,16 @@
 
     nixpkgs.overlays = [ inputs.nix-minecraft.overlay ];
 
+    fileSystems."/srv/minecraft" = {
+        device = "minecraft";
+        fsType = "virtiofs";
+        options = [
+            "rw"
+            "nodev"
+            "nosuid"
+        ];
+    };
+
     services.minecraft-servers = {
         enable = true;
         eula = true;

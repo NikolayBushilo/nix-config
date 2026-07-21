@@ -14,6 +14,7 @@ in
                 hostname = "10.1.10.10";
                 user = "niko";
                 port = 22;
+                identityFile = "~/.ssh/id_ed25519_personal";
             };
 
             vm-edge = {

@@ -17,7 +17,6 @@
 #     2.1 Boot..................................................
 #     2.2 File Systems..........................................
 #     2.3 Sops..................................................
-#     2.4 Proxmox...............................................
 #     2.5 Networking............................................
 #     2.6 System Packages.......................................
 #     2.7 Services..............................................
@@ -65,7 +64,7 @@ in {
         #../../features/ripgrep
         #../../features/zoxide
         #../../features/btop
-        #../../features/minecraft
+        ../../features/minecraft
         #../../features/cloudflared
     ];
 
@@ -109,21 +108,8 @@ in {
         supportedFilesystems = [ "zfs" ];
         zfs = {
             extraPools = [ "rpool" ];
-            # forceImportRoot = false;
-            # devNodes = "/dev/disk/by-path";
-            # requestEncryptionCredentials = false;
+            forceImportRoot = false;
         };
-        # initrd.kernelModules = [ "zfs" ];
-        # kernelModules = [ "zfs" ];
-        # initrd.availableKernelModules = [
-        #     "ahci"
-        #     "ata_piix"
-        #     "sd_mod"
-        #     "sr_mod"
-        #     "virtio_pci"
-        #     "virtio_blk"
-        #     "virtio_scsi"
-        # ];
     };
 
 # 2.2 File Systems
@@ -141,7 +127,7 @@ in {
     #     device = "rpool/persist";
     #     fsType = "zfs";
     # };
-    #
+
 # 2.3 Sops
     sops = {
         defaultSopsFile = ./secrets.yaml;
@@ -161,23 +147,6 @@ in {
         #    mode = "0600";
         #};
     };
-
-# 2.4 Proxmox
-
-    # proxmox = {
-    #     qemuConf = {
-    #         cores = 4;
-    #         memory = 16384;
-    #         bios = "ovmf";
-    #         name = "vm-core";
-    #         agent = true;
-    #     };
-    #     qemuExtraConf = {
-    #         cpu = "host";
-    #         onboot = 1;
-    #     };
-    #     filenameSuffix = "vm-edge";
-    # };
 
 # 2.5 Networking
     networking.hostId = "2feb1f61";
