@@ -8,7 +8,7 @@
         cloudflared
     ];
 
-    sops.secrets."cloudflared/tunnels/edge-vm/credentialFile" = {
+    sops.secrets."cloudflared/tunnels/admin/credentialFile" = {
         mode = "0400";
     };
 
@@ -20,16 +20,15 @@
         enable = true;
         certificateFile = config.sops.secrets."cloudflared/certificateFile".path;
         tunnels = {
-            "75d17e99-8073-4a2a-978a-ed25ca5f73fc" = {
-                credentialsFile = config.sops.secrets."cloudflared/tunnels/edge-vm/credentialFile".path;
+            "f0538d8e-7733-4601-a364-952858dd0d48" = {
+                credentialsFile = config.sops.secrets."cloudflared/tunnels/admin/credentialFile".path;
                 default = "http_status:404";
                 ingress = {
-                    "stupid-1.bushilo.com" = {
-                        service = "tcp://localhost:25565";
+                    "ssh.bushilo.com" = {
+                        service = "ssh://10.1.70.10:22";
                     };
                 };
             };
         };
     };
-
 }

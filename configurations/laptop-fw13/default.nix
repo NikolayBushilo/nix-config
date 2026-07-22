@@ -57,7 +57,7 @@
         ../../features/fonts
         ../../features/bitwarden
         ../../features/dolphin
-        ../../features/freecad
+        # ../../features/freecad
         ../../features/gimp
         ../../features/grimblast
         ../../features/gwenview
@@ -371,6 +371,7 @@
             vintagestory
             openmw
             bluetuith
+            cloudflared
 
             # IOS
             libimobiledevice

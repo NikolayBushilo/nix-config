@@ -219,13 +219,14 @@
 # 3. Home-manager Configuration
 #----------------------------------------------------------------
 
- home-manager.users.niko = {
-   programs.home-manager.enable = true;
-   home.packages = with pkgs; [
-   ];
+    home-manager.users.niko = {
+        programs.home-manager.enable = true;
 
-   # Do not change!
-   home.stateVersion = "25.05";
- };
+        home.packages = with pkgs; [
+        ];
+
+        # Do not change!
+        home.stateVersion = "25.05";
+    };
 
 }

@@ -64,8 +64,8 @@ in {
         #../../features/ripgrep
         #../../features/zoxide
         #../../features/btop
-        ../../features/minecraft
-        #../../features/cloudflared
+        #../../features/minecraft
+        ../../features/cloudflared
     ];
 
   nixpkgs = {
@@ -113,26 +113,24 @@ in {
     };
 
 # 2.2 File Systems
-    # fileSystems."/" = {
-    #     device = "rpool/root";
-    #     fsType = "zfs";
-    # };
-    #
-    # fileSystems."/nix" = {
-    #     device = "rpool/nix";
-    #     fsType = "zfs";
-    # };
-    #
-    # fileSystems."/data" = {
-    #     device = "rpool/persist";
-    #     fsType = "zfs";
-    # };
+    fileSystems."/data/identity" = {
+        device = "vm-edge-identity";
+        fsType = "virtiofs";
+        neededForBoot = true;
+    };
+
+    fileSystems."/etc/machine-id" = {
+        device = "/data/identity/machine-id";
+        fsType = "none";
+        options = [ "bind" ];
+        depends = [ "/data/identity" ];
+    };
 
 # 2.3 Sops
     sops = {
         defaultSopsFile = ./secrets.yaml;
 
-        age.sshKeyPaths = [ "/data/identities/ssh_host_ed25519_key" ];
+        age.sshKeyPaths = [ "/data/identity/ssh_host_ed25519_key" ];
 
         secrets.example-key = {};
         #secrets."cloudflared/minecraft_tunnel" = {
@@ -149,11 +147,12 @@ in {
     };
 
 # 2.5 Networking
-    networking.hostId = "2feb1f61";
-
-    networking.useNetworkd = true;
-
-    networking.firewall.enable = true;
+    networking = {
+        hostId = "2feb1f61";
+        useNetworkd = true;
+        firewall.enable = true;
+        hostName = "vm-edge";
+    };
 
     systemd.network.networks."10-eth" = {
         matchConfig.Type = "ether";
@@ -172,11 +171,15 @@ in {
 # 2.7 Services
     services.openssh = {
         enable = true;
-        settings.PasswordAuthentication = false;
+        settings = {
+            PasswordAuthentication = false;
+            PermitRootLogin = "no";
+            KbdInteractiveAuthentication = false;
+        };
 
         hostKeys = [
             {
-                path = "/data/identities/ssh_host_ed25519_key";
+                path = "/data/identity/ssh_host_ed25519_key";
                 type = "ed25519";
             }
             
@@ -186,6 +189,8 @@ in {
         #    }
         ];
     };
+
+    systemd.services.systemd-machine-id-commit.enable = false;
 
     #services.cloudflared = {
     #    enable = true;
