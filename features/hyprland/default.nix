@@ -66,7 +66,7 @@ in
         input = {
             kb_layout = "us";
             kb_variant = "euro";
-            kb_options = "caps:swapescape,compose:ralt";
+            # kb_options = "caps:swapescape,compose:ralt";
             accel_profile = "flat";
             natural_scroll = false;
         

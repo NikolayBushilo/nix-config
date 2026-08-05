@@ -20,8 +20,9 @@
 #     2.5 Networking............................................
 #     2.6 System Packages.......................................
 #     2.7 Services..............................................
-#     2.8 Misc..................................................
+#     2.8 NixOS Containers......................................
 #     2.9 Users.................................................
+#     2.10 Misc..................................................
 #----------------------------------------------------------------
 
 #----------------------------------------------------------------
@@ -38,6 +39,15 @@
     ...
 }: let 
     ifTheyExist = groups: builtins.filter (group: builtins.hasAttr group config.users.groups) groups;
+
+    managementInterface = "edge-mgmt";
+    ingressInterface = "edge-ingress";
+    tunnelInterface = "edge-tunnel";
+
+    managementAddress = "10.1.0.71/24";
+    managementGateway = "10.1.0.254";
+
+    dnsServer = "10.1.70.11";
 in {
     imports = [
         
@@ -133,32 +143,148 @@ in {
         age.sshKeyPaths = [ "/data/identity/ssh_host_ed25519_key" ];
 
         secrets.example-key = {};
-        #secrets."cloudflared/minecraft_tunnel" = {
-        #    owner = "cloudflared";
-        #    group = "cloudflared";
-        #    mode = "0400";
-        #};
-
-        #secrets.ssh_host_ed25519_key = {
-        #    owner = "root";
-        #    group = "root";
-        #    mode = "0600";
-        #};
     };
 
 # 2.5 Networking
     networking = {
         hostId = "2feb1f61";
-        useNetworkd = true;
-        firewall.enable = true;
         hostName = "vm-edge";
+        useNetworkd = true;
+        firewall = {
+            enable = true;
+            interfaces = {
+                ${managementInterface}.allowedTCPPorts = [ 22 ]; 
+
+                br-ingress = {
+                    allowedTCPPorts = [];
+                    allowedUDPPorts = [];
+                };
+
+                br-tunnel = {
+                    allowedTCPPorts = [];
+                    allowedUDPPorts = [];
+                };
+            };
+
+        };
     };
 
-    systemd.network.networks."10-eth" = {
-        matchConfig.Type = "ether";
-        networkConfig.DHCP = "ipv4";
-    };
+    systemd.network = {
+        enable = true;
 
+        links = {
+            "10-management" = {
+                matchConfig.MACAddress = "BC:24:11:4B:4F:44";
+                linkConfig.Name = managementInterface;
+            };
+
+            "20-ingress" = {
+                matchConfig.MACAddress = "BC:24:11:E6:0C:3F";
+                linkConfig.Name = ingressInterface;
+            };
+
+            "30-tunnel" = {
+                matchConfig.MACAddress = "BC:24:11:07:92:B2";
+                linkConfig.Name = tunnelInterface;
+            };
+        };
+
+        netdevs = {
+            "20-br-ingress" = {
+                netdevConfig = {
+                    Kind = "bridge";
+                    Name = "br-ingress";
+                };
+
+                bridgeConfig = {
+                    STP = false;
+                    ForwardDelaySec = 0;
+                };
+            };
+
+            "30-br-tunnel" = {
+                netdevConfig = {
+                    Kind = "bridge";
+                    Name = "br-tunnel";
+                };
+
+                bridgeConfig = {
+                    STP = false;
+                    ForwardDelaySec = 0;
+                };
+            };
+        };
+
+        networks = {
+            "10-management" = {
+                    matchConfig.Name = managementInterface;
+                    address = [ managementAddress ];
+                    routes = [ 
+                        { 
+                            Gateway = managementGateway;
+                        }   
+                    ];
+                    networkConfig = {
+                        DHCP = "no";
+                        IPv6AcceptRA = false;
+                    };
+
+                    linkConfig.RequiredForOnline = "routable";
+                };
+
+            "20-ingress-uplink" = {
+                matchConfig.Name = ingressInterface;
+                bridge = [ "br-ingress" ];
+
+                networkConfig = {
+                    DHCP = "no";
+                    LinkLocalAddressing = "no";
+                    IPv6AcceptRA = false;
+                };
+
+                linkConfig.RequiredForOnline = "enslaved";
+            };
+
+            "21-ingress-bridge" = {
+                matchConfig.Name = "br-ingress";
+
+                networkConfig = {
+                    DHCP = "no";
+                    LinkLocalAddressing = "no";
+                    IPv6AcceptRA = false;
+                    ConfigureWithoutCarrier = true;
+                };
+
+                linkConfig.RequiredForOnline = "carrier";
+            };
+
+            "30-tunnel-uplink" = {
+                matchConfig.Name = tunnelInterface;
+                bridge = [ "br-tunnel" ];
+
+                networkConfig = {
+                    DHCP = "no";
+                    LinkLocalAddressing = "no";
+                    IPv6AcceptRA = false;
+                };
+
+                linkConfig.RequiredForOnline = "enslaved";
+            };
+
+            "31-tunnel-bridge" = {
+                matchConfig.Name = "br-tunnel";
+
+                networkConfig = {
+                    DHCP = "no";
+                    LinkLocalAddressing = "no";
+                    IPv6AcceptRA = false;
+                    ConfigureWithoutCarrier = true;
+                };
+
+                linkConfig.RequiredForOnline = "carrier";
+            };
+        };
+    };
 
 
 # 2.6 System Packages
@@ -192,22 +318,10 @@ in {
 
     systemd.services.systemd-machine-id-commit.enable = false;
 
-    #services.cloudflared = {
-    #    enable = true;
-    #    tunnels = {
-    #        "a649e83a-4676-44cd-8672-f10c6a58299a" = {
-    #            credentialsFile = "${config.sops.secrets."cloudflared/minecraft_tunnel".path}";
-    #            default = "http_status:404";
-    #            ingress = {
-    #                "mc.bushilo.com" = {
-    #                    service = "localhost:25565";
-    #                };
-    #            };
-    #        };
-    #    };
-    #};
+# 2.8 Nixos-Containers
+    
 
-# 2.8 User
+# 2.9 User
     users.mutableUsers = true;
     users.users.niko = {
         isNormalUser = true;
@@ -237,7 +351,7 @@ in {
         ];
     };
 
-# 2.9 Misc
+# 2.10 Misc
 
     security.sudo = {
         enable = true;

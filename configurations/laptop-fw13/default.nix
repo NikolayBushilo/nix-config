@@ -123,7 +123,7 @@
 
         hostName = "laptop-fw13";
 
-        firewall.allowedTCPPorts = [ 44444 43939 ];
+        firewall.allowedTCPPorts = [ 44444 43939 2302 ];
     };
 
 # 2.3 System Packages
@@ -162,10 +162,10 @@
     #  x11Support = false;
     #};
 
-    services.xserver.xkbOptions = "caps:swapescape";
+    # services.xserver.xkbOptions = "caps:swapescape";
 
     services.keyd = {
-        enable = false;
+        enable = true;
 
         keyboards = {
             default = {
@@ -181,14 +181,14 @@
         };
     };
 
-    #systemd.services.keyd.serviceConfig.NoNewPrivileges = lib.mkForce false;
-    #systemd.services.keyd.serviceConfig.CapabilityBoundingSet = lib.mkForce [
-    #    "CAP_SETGID"
-    #    "CAP_SETUID"
-    #    "CAP_SYS_ADMIN"
-    #    "CAP_SYS_NICE"
-    #    "CAP_IPC_LOCK"
-    #];
+    systemd.services.keyd.serviceConfig.NoNewPrivileges = lib.mkForce false;
+    systemd.services.keyd.serviceConfig.CapabilityBoundingSet = lib.mkForce [
+       "CAP_SETGID"
+       "CAP_SETUID"
+       "CAP_SYS_ADMIN"
+       "CAP_SYS_NICE"
+       "CAP_IPC_LOCK"
+    ];
 
     # For Mullvad vpn
     services.resolved.enable = true;
@@ -372,6 +372,7 @@
             openmw
             bluetuith
             cloudflared
+            protonup-qt
 
             # IOS
             libimobiledevice
@@ -396,11 +397,11 @@
             };
         };
   
-        # Swap caps_lock and escape
+        # Swap caps_lock and escape "caps:swapescape"
         home.keyboard = {
             layout = "us";
             variant = "altgr-intl";
-            options = [ "compose:ralt" "caps:swapescape"]; 
+            options = [ "compose:ralt" ]; 
         };
 
         services.playerctld = {
