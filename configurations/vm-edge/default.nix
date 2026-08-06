@@ -75,7 +75,7 @@ in {
         #../../features/zoxide
         #../../features/btop
         #../../features/minecraft
-        ../../features/cloudflared
+        #../../features/cloudflared
     ];
 
   nixpkgs = {
@@ -142,7 +142,16 @@ in {
 
         age.sshKeyPaths = [ "/data/identity/ssh_host_ed25519_key" ];
 
-        secrets.example-key = {};
+        secrets = {
+            example-key = {};
+            "cloudflared/tunnels/vm-edge/credentialFile" = {
+                mode = "0400";
+            };
+
+            "cloudflared/certificateFile" = {
+                mode = "0400";
+            };
+        };
     };
 
 # 2.5 Networking
@@ -318,8 +327,171 @@ in {
 
     systemd.services.systemd-machine-id-commit.enable = false;
 
-# 2.8 Nixos-Containers
-    
+# 2.8 Nixos Containers
+
+    containers = {
+        cloudflared = {
+
+            # Container config
+            autoStart = true;
+            privateNetwork = true;
+            hostBridge = "br-tunnel";
+            localAddress = "10.1.41.10/24";
+
+            bindMounts = {
+                "/run/secrets/cloudflared/certificateFile" = {
+                    hostPath = config.sops.secrets."cloudflared/certificateFile".path;
+                    isReadOnly = true;
+                };
+
+                "/run/secrets/cloudflared/tunnels/vm-edge/credentialFile" = {
+                    hostPath = config.sops.secrets."cloudflared/tunnels/vm-edge/credentialFile".path;
+                    isReadOnly = true;
+                };
+            };
+
+            # Inside container
+            config = { config, pkgs, lib, ... }:
+            {
+                imports = [
+                ];
+
+                networking = {
+                    hostName = "cloudflared";
+                    useDHCP = false;
+                    useNetworkd = true;
+                    useHostResolvConf = lib.mkForce false;
+                    nameservers = [ "10.1.41.254" ]; # Workaround for bug https://github.com/NixOS/nixpkgs/issues/162686
+                    defaultGateway = {
+                        address = "10.1.41.254";
+                        interface = "eth0";
+                    };
+                };
+
+                services.cloudflared = {
+                    enable = true;
+                    certificateFile = "/run/secrets/cloudflared/certificateFile";
+                    tunnels = {
+                        "4cdf3fa5-1e08-44c9-8816-abdcb15b3aba" = {
+                            credentialsFile = "/run/secrets/cloudflared/tunnels/vm-edge/credentialFile";
+                            default = "http_status:404";
+                            ingress = {
+                                "ssh.bushilo.com" = {
+                                    service = "ssh://localhost:22";
+                                };
+                                "test.bushilo.com" = {
+                                    service = "http://10.1.40.11:80";
+                                };
+                            };
+                        };
+                    };
+                };
+
+
+                systemd.network.enable = true;
+
+                services.resolved.enable = false;
+
+                system.stateVersion = "25.11";
+            };
+        };
+
+        caddy = {
+            autoStart = true;
+            privateNetwork = true;
+
+            hostBridge = "br-ingress";
+            localAddress = "10.1.40.11/24";
+
+            config = { lib, ... }:
+            {
+                networking = {
+                    hostName = "caddy";
+
+                    useDHCP = false;
+                    useNetworkd = true;
+                    useHostResolvConf = lib.mkForce false;
+
+                    # Temporary DNS until Technitium exists.
+                    nameservers = [ "10.1.40.254" ];
+
+                    defaultGateway = {
+                        address = "10.1.40.254";
+                        interface = "eth0";
+                    };
+
+                    firewall = {
+                        enable = true;
+                        allowedTCPPorts = [ 80 ];
+                    };
+                };
+
+                systemd.network.enable = true;
+                services.resolved.enable = false;
+
+                services.caddy = {
+                    enable = true;
+
+                    extraConfig = ''
+                    :80 {
+                    header Content-Type "text/html; charset=utf-8"
+
+                    respond <<HTML
+                    <!doctype html>
+                    <html lang="en">
+                    <head>
+                    <meta charset="utf-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1">
+                    <title>vm-edge ingress</title>
+                    <style>
+                    body {
+                    margin: 0;
+                    min-height: 100vh;
+                    display: grid;
+                    place-items: center;
+                    background: #111827;
+                    color: #e5e7eb;
+                    font-family: system-ui, sans-serif;
+                    }
+
+                    main {
+                    max-width: 42rem;
+                    padding: 3rem;
+                    border: 1px solid #374151;
+                    border-radius: 1rem;
+                    background: #1f2937;
+                    }
+
+                    h1 {
+                    margin-top: 0;
+                    color: #f9fafb;
+                    }
+
+                    code {
+                    color: #93c5fd;
+                    }
+                    </style>
+                    </head>
+
+                    <body>
+                    <main>
+                    <h1>Cloudflare Tunnel → Caddy works</h1>
+                    <p>
+                    This response came from the Caddy NixOS container at
+                    <code>10.1.40.11</code>.
+                    </p>
+                    </main>
+                    </body>
+                    </html>
+                    HTML 200
+                    }
+                    '';
+                };
+
+                system.stateVersion = "25.11";
+            };
+        };
+    };
 
 # 2.9 User
     users.mutableUsers = true;
