@@ -5,16 +5,13 @@ keys:
     - &laptop-fw13 age1l59qjklfyzsg3uecjth6ltzzfs89gaffefx820w72j9cvaddsqmsrsxpwm
     # - &ms-01 age1lnpctyvkwczqwgqs4dsm3sldty8h2qgu800xj8xha9v3h6wdx4ms8xzlfg
     - &vm-edge age1argh5knhkvgrwew4e5xtaphcjmk4fv6ydxyzdtcwfgshyzxv7e5s2tcleu 
-    # - &vm-core
+    - &vm-core age1cp5vy0zp30w5573328wn057uj3asucw9rgjdqcpjzgadcnch3dsq7nhvf5
 creation_rules:
   - path_regex: users/niko/secrets.yaml$
     key_groups:
     - age:
       - *niko
       - *laptop-fw13
-      # - *ms-01
-      # - *vm-edge
-      # - *vm-core
   - path_regex: configurations/laptop-fw13/secrets.yaml$
     key_groups:
     - age:
@@ -30,8 +27,8 @@ creation_rules:
     - age:
       - *niko
       - *vm-edge
-  #- path_regex: configurations/vm-core/secrets.yaml$
-  #  key_groups:
-  #  - age:
-  #    - *niko
-  #    - *vm-core
+  - path_regex: configurations/vm-core/secrets.yaml$
+    key_groups:
+    - age:
+      - *niko
+      - *vm-core

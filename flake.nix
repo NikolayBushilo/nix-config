@@ -22,7 +22,10 @@
 #   2. NixOS configuration entrypoint w/ Home-manager module....
 #     2.1. Framework 13 laptop..................................
 #     2.2. MS-01 homelab server.................................
-#     2.3. VM-edge Virtual Machine..............................
+#     2.3. vm-edge virtual machine..............................
+#     2.4. vm-core virtual machine..............................
+#     2.5. vm-private virtual machine...........................
+#     2.6. vm-public virtual machine............................
 #   3. Standalone Home-manager configuration entrypoint.........
 #     3.1. Universal standalone config..........................
 #     3.2. Apple M2 standalone..................................
@@ -36,7 +39,6 @@
 
   inputs = {
 
-    # Nix Ecosystem
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-25.05";
 
@@ -138,27 +140,48 @@
 # 2. Nixos configuration entrypoint w/ Home-manager as a module
 #----------------------------------------------------------------
 
-# Available through 'nixos-rebuild --flake .#{host}'
-
     nixosConfigurations = {
-      # Framework 13 laptop
-      "laptop-fw13" = nixpkgs.lib.nixosSystem {
-        modules = [ ./configurations/laptop-fw13 ];
-        specialArgs = {inherit inputs outputs self;};
-      };
 
-      # [DEPRICATED: REPLACED BY PROXMOX] MS-01 homelab server 
-      "ms-01" = nixpkgs.lib.nixosSystem {
-        modules = [ ./configurations/ms-01 ];
-        specialArgs = {inherit inputs outputs self;};
-      };
+        "laptop-fw13" = nixpkgs.lib.nixosSystem {
+            modules = [ ./configurations/laptop-fw13 ];
+            specialArgs = {inherit inputs outputs self;};
+        };
 
-      # Virtual Machines
-      "vm-edge" = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        modules = [ ./configurations/vm-edge ];
-        specialArgs = {inherit inputs outputs self;};
-      };
+        # [DEPRICATED: REPLACED BY PROXMOX] MS-01 homelab server 
+        "ms-01" = nixpkgs.lib.nixosSystem {
+            modules = [ ./configurations/ms-01 ];
+            specialArgs = {inherit inputs outputs self;};
+        };
+
+        "vm-edge" = nixpkgs.lib.nixosSystem {
+            system = "x86_64-linux";
+            modules = [ ./configurations/vm-edge ];
+            specialArgs = {inherit inputs outputs self;};
+        };
+
+        "vm-core" = nixpkgs.lib.nixosSystem {
+            system = "x86_64-linux";
+            modules = [ ./configurations/vm-core ];
+            specialArgs = {inherit inputs outputs self;};
+        };
+
+        "vm-private" = nixpkgs.lib.nixosSystem {
+            system = "x86_64-linux";
+            modules = [ ./configurations/vm-private ];
+            specialArgs = {inherit inputs outputs self;};
+        };
+
+        "vm-public" = nixpkgs.lib.nixosSystem {
+            system = "x86_64-linux";
+            modules = [ ./configurations/vm-public ];
+            specialArgs = {inherit inputs outputs self;};
+        };
+
+        "vm-storage" = nixpkgs.lib.nixosSystem {
+            system = "x86_64-linux";
+            modules = [ ./configurations/vm-storage ];
+            specialArgs = {inherit inputs outputs self;};
+        };
     };
 
 #----------------------------------------------------------------
