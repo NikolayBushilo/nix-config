@@ -1,9 +1,9 @@
 #----------------------------------------------------------------
-#   _____               _   ____  ___
-#  / ___/__  _______   | | / /  |/  /
-# / /__/ _ \/ __/ -_)  | |/ / /|_/ / 
-# \___/\___/_/  \__/   |___/_/  /_/  
-# 
+#    ___       __   ___       _   ____  ___
+#   / _ \__ __/ /  / (_)___  | | / /  |/  /
+#  / ___/ // / _ \/ / / __/  | |/ / /|_/ / 
+# /_/   \_,_/_.__/_/_/\__/   |___/_/  /_/  
+#
 #----------------------------------------------------------------
 #  License : MIT
 #  Author  : Nikolay Bushilo 
@@ -39,10 +39,10 @@
 }: let 
     ifTheyExist = groups: builtins.filter (group: builtins.hasAttr group config.users.groups) groups;
 
-    managementInterface = "core-mgmt";
-    coreInterface = "core-infra";
+    managementInterface = "public-mgmt";
+    defaultInterface = "public-default";
 
-    managementAddress = "10.1.0.72/24";
+    managementAddress = "10.1.0.74/24";
     managementGateway = "10.1.0.254";
 
     dnsServer = "10.1.70.11";
@@ -122,7 +122,7 @@ in {
 
 # 2.2 File Systems
     fileSystems."/data/identity" = {
-        device = "vm-core-identity";
+        device = "vm-public-identity";
         fsType = "virtiofs";
         neededForBoot = true;
     };
@@ -147,15 +147,15 @@ in {
 
 # 2.5 Networking
     networking = {
-        hostId = "878b1885";
-        hostName = "vm-core";
+        hostId = "3680c30d";
+        hostName = "vm-public";
         useNetworkd = true;
         firewall = {
             enable = true;
             interfaces = {
                 ${managementInterface}.allowedTCPPorts = [ 22 ]; 
 
-                br-core = {
+                br-default = {
                     allowedTCPPorts = [];
                     allowedUDPPorts = [];
                 };
@@ -169,22 +169,22 @@ in {
 
         links = {
             "10-management" = {
-                matchConfig.MACAddress = "BC:24:11:27:65:A7";
+                matchConfig.MACAddress = "BC:24:11:48:88:3B";
                 linkConfig.Name = managementInterface;
             };
 
-            "20-core" = {
-                matchConfig.MACAddress = "BC:24:11:07:28:B2";
-                linkConfig.Name = coreInterface;
+            "20-default" = {
+                matchConfig.MACAddress = "BC:24:11:D0:B7:1F";
+                linkConfig.Name = defaultInterface;
             };
 
         };
 
         netdevs = {
-            "20-br-core" = {
+            "20-br-default" = {
                 netdevConfig = {
                     Kind = "bridge";
-                    Name = "br-core";
+                    Name = "br-default";
                 };
 
                 bridgeConfig = {
@@ -212,9 +212,9 @@ in {
                     linkConfig.RequiredForOnline = "routable";
                 };
 
-            "20-core-uplink" = {
-                matchConfig.Name = coreInterface;
-                bridge = [ "br-core" ];
+            "20-default-uplink" = {
+                matchConfig.Name = defaultInterface;
+                bridge = [ "br-default" ];
 
                 networkConfig = {
                     DHCP = "no";
@@ -225,8 +225,8 @@ in {
                 linkConfig.RequiredForOnline = "enslaved";
             };
 
-            "21-core-bridge" = {
-                matchConfig.Name = "br-core";
+            "21-default-bridge" = {
+                matchConfig.Name = "br-default";
 
                 networkConfig = {
                     DHCP = "no";

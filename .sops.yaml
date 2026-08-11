@@ -6,6 +6,9 @@ keys:
     # - &ms-01 age1lnpctyvkwczqwgqs4dsm3sldty8h2qgu800xj8xha9v3h6wdx4ms8xzlfg
     - &vm-edge age1argh5knhkvgrwew4e5xtaphcjmk4fv6ydxyzdtcwfgshyzxv7e5s2tcleu 
     - &vm-core age1cp5vy0zp30w5573328wn057uj3asucw9rgjdqcpjzgadcnch3dsq7nhvf5
+    - &vm-private age1qc33a7gufggkc6kmkwglcnn2lt9qg4qwcel4ny00v9nfad0e3gxsujqphn
+    - &vm-public age1j3a65kn6lcazy4vvg5jj9ztf5zkcpdjj3yu3akwu5venhs24l4eqp52hl8
+    - &vm-storage age1pduujzdymnm03q80jmm9uptrkvw4htvq3u07md0t0wnd4mzw5efq37rhnf
 creation_rules:
   - path_regex: users/niko/secrets.yaml$
     key_groups:
@@ -32,3 +35,18 @@ creation_rules:
     - age:
       - *niko
       - *vm-core
+  - path_regex: configurations/vm-private/secrets.yaml$
+    key_groups:
+    - age:
+      - *niko
+      - *vm-private
+  - path_regex: configurations/vm-public/secrets.yaml$
+    key_groups:
+    - age:
+      - *niko
+      - *vm-public
+  - path_regex: configurations/vm-storage/secrets.yaml$
+    key_groups:
+    - age:
+      - *niko
+      - *vm-storage
