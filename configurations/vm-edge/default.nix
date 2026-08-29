@@ -75,7 +75,6 @@ in {
         #../../features/zoxide
         #../../features/btop
         #../../features/minecraft
-        #../../features/cloudflared
     ];
 
   nixpkgs = {
@@ -360,8 +359,8 @@ in {
                     hostName = "cloudflared";
                     useDHCP = false;
                     useNetworkd = true;
-                    useHostResolvConf = lib.mkForce false;
-                    nameservers = [ "10.1.41.254" ]; # Workaround for bug https://github.com/NixOS/nixpkgs/issues/162686
+                    useHostResolvConf = lib.mkForce false; # Workaround for bug https://github.com/NixOS/nixpkgs/issues/162686
+                    nameservers = [ dnsServer ]; 
                     defaultGateway = {
                         address = "10.1.41.254";
                         interface = "eth0";
@@ -376,11 +375,13 @@ in {
                             credentialsFile = "/run/secrets/cloudflared/tunnels/vm-edge/credentialFile";
                             default = "http_status:404";
                             ingress = {
-                                "ssh.bushilo.com" = {
-                                    service = "ssh://localhost:22";
-                                };
-                                "test.bushilo.com" = {
-                                    service = "http://10.1.40.11:80";
+                                "*.bushilo.com" = {
+                                    service = "https://10.1.40.11:443";
+
+                                    originRequest = {
+                                        originServerName = "test.bushilo.com";
+                                        # httpHostHeader = "test.bushilo.com";
+                                    };
                                 };
                             };
                         };
@@ -412,8 +413,7 @@ in {
                     useNetworkd = true;
                     useHostResolvConf = lib.mkForce false;
 
-                    # Temporary DNS until Technitium exists.
-                    nameservers = [ "10.1.40.254" ];
+                    nameservers = [ dnsServer ];
 
                     defaultGateway = {
                         address = "10.1.40.254";
@@ -422,7 +422,7 @@ in {
 
                     firewall = {
                         enable = true;
-                        allowedTCPPorts = [ 80 ];
+                        allowedTCPPorts = [ 80 443 ];
                     };
                 };
 
@@ -432,60 +432,121 @@ in {
                 services.caddy = {
                     enable = true;
 
-                    extraConfig = ''
-                    :80 {
-                    header Content-Type "text/html; charset=utf-8"
-
-                    respond <<HTML
-                    <!doctype html>
-                    <html lang="en">
-                    <head>
-                    <meta charset="utf-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1">
-                    <title>vm-edge ingress</title>
-                    <style>
-                    body {
-                    margin: 0;
-                    min-height: 100vh;
-                    display: grid;
-                    place-items: center;
-                    background: #111827;
-                    color: #e5e7eb;
-                    font-family: system-ui, sans-serif;
-                    }
-
-                    main {
-                    max-width: 42rem;
-                    padding: 3rem;
-                    border: 1px solid #374151;
-                    border-radius: 1rem;
-                    background: #1f2937;
-                    }
-
-                    h1 {
-                    margin-top: 0;
-                    color: #f9fafb;
-                    }
-
-                    code {
-                    color: #93c5fd;
-                    }
-                    </style>
-                    </head>
-
-                    <body>
-                    <main>
-                    <h1>Cloudflare Tunnel → Caddy works</h1>
-                    <p>
-                    This response came from the Caddy NixOS container at
-                    <code>10.1.40.11</code>.
-                    </p>
-                    </main>
-                    </body>
-                    </html>
-                    HTML 200
-                    }
+                    globalConfig = ''
+                        debug
                     '';
+
+                    virtualHosts = {
+                        "test.bushilo.com" = {
+                            extraConfig = ''
+                                header Content-Type "text/html; charset=utf-8"
+
+                                respond <<HTML
+                                <!doctype html>
+                                <html lang="en">
+                                <head>
+                                <meta charset="utf-8">
+                                <meta name="viewport" content="width=device-width, initial-scale=1">
+                                <title>vm-edge ingress</title>
+                                <style>
+                                body {
+                                margin: 0;
+                                min-height: 100vh;
+                                display: grid;
+                                place-items: center;
+                                background: #111827;
+                                color: #e5e7eb;
+                                font-family: system-ui, sans-serif;
+                                }
+
+                                main {
+                                max-width: 42rem;
+                                padding: 3rem;
+                                border: 1px solid #374151;
+                                border-radius: 1rem;
+                                background: #1f2937;
+                                }
+
+                                h1 {
+                                margin-top: 0;
+                                color: #f9fafb;
+                                }
+
+                                code {
+                                color: #93c5fd;
+                                }
+                                </style>
+                                </head>
+
+                                <body>
+                                <main>
+                                <h1>Cloudflare Tunnel → Caddy works</h1>
+                                <p>
+                                This response came from the Caddy NixOS container at
+                                <code>10.1.40.11</code>.
+                                </p>
+                                </main>
+                                </body>
+                                </html>
+                                HTML 200
+                            '';
+                        };
+                        "foo.bushilo.com" = {
+                            extraConfig = ''
+                                header Content-Type "text/html; charset=utf-8"
+
+                                respond <<HTML
+                                <!doctype html>
+                                <html lang="en">
+                                <head>
+                                <meta charset="utf-8">
+                                <meta name="viewport" content="width=device-width, initial-scale=1">
+                                <title>vm-edge ingress</title>
+                                <style>
+                                body {
+                                margin: 0;
+                                min-height: 100vh;
+                                display: grid;
+                                place-items: center;
+                                background: #111827;
+                                color: #e5e7eb;
+                                font-family: system-ui, sans-serif;
+                                }
+
+                                main {
+                                max-width: 42rem;
+                                padding: 3rem;
+                                border: 1px solid #374151;
+                                border-radius: 1rem;
+                                background: #1f2937;
+                                }
+
+                                h1 {
+                                margin-top: 0;
+                                color: #f9fafb;
+                                }
+
+                                code {
+                                color: #93c5fd;
+                                }
+                                </style>
+                                </head>
+
+                                <body>
+                                <main>
+                                <h1>Cloudflare Tunnel → Caddy works</h1>
+                                <p>
+                                This response came from the Caddy NixOS container at
+                                <code>10.1.40.11</code>.
+                                (Foo)
+                                </p>
+                                </main>
+                                </body>
+                                </html>
+                                HTML 200
+                            '';
+                        };
+                    };
                 };
 
                 system.stateVersion = "25.11";

@@ -270,6 +270,46 @@ in {
 # 2.8 Nixos Containers
 
     containers = {
+        technitium = {
+            autoStart = true;
+            privateNetwork = true;
+
+            hostBridge = "br-core";
+            localAddress = "10.1.70.11/24";
+
+            config = { ... }:
+            {
+                networking = {
+                    hostName = "technitium";
+
+                    useDHCP = false;
+                    useNetworkd = true;
+                    useHostResolvConf = lib.mkForce false;
+
+                    nameservers = [ "1.1.1.1" ];
+
+                    defaultGateway = {
+                        address = "10.1.70.254";
+                        interface = "eth0";
+                    };
+
+                    firewall = {
+                        enable = true;
+                        allowedTCPPorts = [ 53 5380 53443 ];
+                        allowedUDPPorts = [ 53 ];
+                    };
+                };
+
+                services.technitium-dns-server = {
+                    enable = true;
+                };
+
+                systemd.network.enable = true;
+                services.resolved.enable = false;
+
+                system.stateVersion = "25.11";
+            };
+        };
     };
 
 # 2.9 User

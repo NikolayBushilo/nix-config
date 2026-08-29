@@ -385,12 +385,12 @@
                 ipc = "on";
                 splash = false;
                 preload = [
-                    "~/Pictures/SKALD-MapAndWallpaper/Wallpaper/Skald_Keyart_v2_Pixelated_4K.png"
+                    "~/Pictures/Artworks/My_Paintings/A_cloudy_day_at_sea.jpeg"
                 ];
                 wallpaper = [
                     {
                     monitor = "";
-                    path = "~/Pictures/SKALD-MapAndWallpaper/Wallpaper/Skald_Keyart_v2_Pixelated_4K.png";
+                    path = "~/Pictures/Artworks/My_Paintings/A_cloudy_day_at_sea.jpeg";
                     fit_mode = "fill";
                     }
                 ];
