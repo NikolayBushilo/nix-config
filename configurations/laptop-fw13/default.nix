@@ -71,6 +71,7 @@
         ../../features/prismlauncher
         ../../features/rofi
         ../../features/steam
+        ../../features/cyber-tools
 
     ];
 
