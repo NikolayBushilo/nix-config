@@ -134,6 +134,12 @@ in {
         depends = [ "/data/identity" ];
     };
 
+    fileSystems."/data/services/technitium" = {
+        device = "technitium";
+        fsType = "virtiofs";
+        neededForBoot = true;
+    };
+
 # 2.3 Sops
     sops = {
         defaultSopsFile = ./secrets.yaml;
@@ -276,6 +282,13 @@ in {
 
             hostBridge = "br-core";
             localAddress = "10.1.70.11/24";
+
+            bindMounts = {
+                "/etc/dns" = {
+                    hostPath = "/data/services/technitium";
+                    isReadOnly = false;
+                };
+            };
 
             config = { ... }:
             {
