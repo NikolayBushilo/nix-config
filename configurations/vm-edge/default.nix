@@ -135,6 +135,12 @@ in {
         depends = [ "/data/identity" ];
     };
 
+    fileSystems."/data/services/caddy" = {
+        device = "caddy";
+        fsType = "virtiofs";
+        neededForBoot = true;
+    };
+
 # 2.3 Sops
     sops = {
         defaultSopsFile = ./secrets.yaml;
@@ -403,6 +409,13 @@ in {
 
             hostBridge = "br-ingress";
             localAddress = "10.1.40.11/24";
+
+            bindMounts = {
+                "/var/lib/caddy" = {
+                    hostPath = "/data/services/caddy";
+                    isReadOnly = false;
+                };
+            };
 
             config = { lib, ... }:
             {
