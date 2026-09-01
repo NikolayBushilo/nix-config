@@ -284,7 +284,7 @@ in {
             localAddress = "10.1.70.11/24";
 
             bindMounts = {
-                "/etc/dns" = {
+                "/var/lib/technitium-dns-server" = {
                     hostPath = "/data/services/technitium";
                     isReadOnly = false;
                 };

@@ -559,6 +559,11 @@ in {
                                 HTML 200
                             '';
                         };
+                        "paperless.bushilo.com" = {
+                            extraConfig = ''
+                                reverse_proxy http://10.1.50.10:28981
+                            '';
+                        };
                     };
                 };
 

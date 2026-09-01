@@ -134,6 +134,12 @@ in {
         depends = [ "/data/identity" ];
     };
 
+    fileSystems."/data/services/paperless-ngx" = {
+        device = "paperless-ngx";
+        fsType = "virtiofs";
+        neededForBoot = true;
+    };
+
 # 2.3 Sops
     sops = {
         defaultSopsFile = ./secrets.yaml;
@@ -270,6 +276,55 @@ in {
 # 2.8 Nixos Containers
 
     containers = {
+        paperless-ngx = {
+            autoStart = true;
+            privateNetwork = true;
+
+            hostBridge = "br-default";
+            localAddress = "10.1.50.10/24";
+
+            bindMounts = {
+                "/var/lib/paperless" = {
+                    hostPath = "/data/services/paperless-ngx";
+                    isReadOnly = false;
+                };
+            };
+
+            config = { ... }:
+            {
+                networking = {
+                    hostName = "paperless-ngx";
+
+                    useDHCP = false;
+                    useNetworkd = true;
+                    useHostResolvConf = lib.mkForce false;
+
+                    nameservers = [ "1.1.1.1" ];
+
+                    defaultGateway = {
+                        address = "10.1.50.254";
+                        interface = "eth0";
+                    };
+
+                    firewall = {
+                        enable = true;
+                        allowedTCPPorts = [ 28981 ];
+                        allowedUDPPorts = [ ];
+                    };
+                };
+
+                services.paperless = {
+                    enable = true;
+                    consumptionDirIsPublic = true;
+                    port = 28981;
+                };
+
+                systemd.network.enable = true;
+                services.resolved.enable = false;
+
+                system.stateVersion = "25.11";
+            };
+        };
     };
 
 # 2.9 User
