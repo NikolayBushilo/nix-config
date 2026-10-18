@@ -201,6 +201,11 @@
         package = pkgs.usbmuxd2;
     };
 
+    # Scanner
+    services.udev.extraRules = ''
+        SUBSYSTEM=="usb", ATTR{idVendor}=="04f9", ATTR{idProduct}=="041f", MODE="0660", GROUP="scanner"
+    '';
+
 
 # 2.5 Misc
 
@@ -239,6 +244,7 @@
     hardware = {
         # enables support for SANE scanners
         sane.enable = true; 
+        sane.brscan4.enable = true;
 
         bluetooth = {
             enable = true;
@@ -256,6 +262,11 @@
     };
 
     users.groups.keyd = {};
+
+    # Docker for penpot
+    virtualisation.docker = {
+        enable = true;
+    };
 
     # Do not change!
     system.stateVersion = "23.05";
@@ -374,10 +385,16 @@
             bluetuith
             cloudflared
             protonup-qt
+            libreoffice
+            penpot-desktop
 
             # IOS
             libimobiledevice
             ifuse
+
+            # Scanning tools
+            sane-backends
+            simple-scan
         ];
 
         services.hyprpaper = {
@@ -387,11 +404,13 @@
                 splash = false;
                 preload = [
                     "~/Pictures/Artworks/My_Paintings/A_cloudy_day_at_sea.jpeg"
+                    "~/Pictures/blue_wallpaper.jpg"
+                    "~/Pictures/catfish.jpg"
                 ];
                 wallpaper = [
                     {
                     monitor = "";
-                    path = "~/Pictures/Artworks/My_Paintings/A_cloudy_day_at_sea.jpeg";
+                    path = "~/Pictures/catfish.jpg";
                     fit_mode = "fill";
                     }
                 ];

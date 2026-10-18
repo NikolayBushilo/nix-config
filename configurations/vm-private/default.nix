@@ -160,9 +160,10 @@ in {
             enable = true;
             interfaces = {
                 ${managementInterface}.allowedTCPPorts = [ 22 ]; 
+                ${defaultInterface}.allowedTCPPorts = [ 28981 9001 ]; 
 
                 br-default = {
-                    allowedTCPPorts = [];
+                    allowedTCPPorts = [ 28981 9001 ];
                     allowedUDPPorts = [];
                 };
             };
@@ -317,6 +318,21 @@ in {
                     enable = true;
                     consumptionDirIsPublic = true;
                     port = 28981;
+                    address = "0.0.0.0";
+                    settings = {
+                        PAPERLESS_URL = "https://paperless.home.arpa";
+
+                        # PAPERLESS_ALLOWED_HOSTS = [
+                        #     "paperless.bushilo.com"
+                        # ];
+                        #
+                        # PAPERLESS_TRUSTED_PROXIES = [
+                        #     "10.1.40.11"
+                        # ];
+
+                        # PAPERLESS_USE_X_FORWARD_HOST = true;
+                        # PAPERLESS_USE_X_FORWARD_PORT = true;
+                    };
                 };
 
                 systemd.network.enable = true;

@@ -559,7 +559,7 @@ in {
                                 HTML 200
                             '';
                         };
-                        "paperless.bushilo.com" = {
+                        "paperless.home.arpa" = {
                             extraConfig = ''
                                 reverse_proxy http://10.1.50.10:28981
                             '';
